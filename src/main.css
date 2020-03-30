@@ -1,0 +1,104 @@
+.TexEditor-container {
+	display: flex;
+	flex: 1;
+	align-items: center;
+}
+
+.TeXEditor-root {
+	font-family: 'Century Schoolbook', serif;
+	-webkit-font-smoothing: antialiased;
+	margin: 5px auto;
+	flex: 1;
+}
+
+.TeXEditor-editor {
+	cursor: text;
+	font-size: 18px;
+	min-height: 40px;
+	padding: 5px;
+}
+
+.TeXEditor-button {
+	margin-top: 10px;
+	text-align: center;
+}
+
+.TeXEditor-handle {
+	color: rgba(98, 177, 254, 1);
+	direction: ltr;
+	unicode-bidi: bidi-override;
+}
+
+.TeXEditor-hashtag {
+	color: rgba(95, 184, 138, 1);
+}
+
+.TeXEditor-tex {
+	background-color: #fff;
+	cursor: pointer;
+	margin: 0px auto;
+	padding: 0px;
+	-webkit-transition: background-color 0.2s fade-in-out;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+.TeXEditor-activeTeX {
+	color: #888;
+}
+
+.TeXEditor-panel {
+	font-family: 'Helvetica', sans-serif;
+	font-weight: 200;
+}
+
+.TeXEditor-panel .TeXEditor-texValue {
+	border: 1px solid #e1e1e1;
+	display: block;
+	font-family: 'Inconsolata', 'Menlo', monospace;
+	font-size: 14px;
+	height: 110px;
+	margin: 20px auto 10px;
+	outline: none;
+	padding: 14px;
+	resize: none;
+	-webkit-box-sizing: border-box;
+	width: 500px;
+}
+
+.TeXEditor-buttons {
+	text-align: center;
+}
+
+.TeXEditor-saveButton,
+.TeXEditor-removeButton {
+	background-color: #fff;
+	border: 1px solid #0a0;
+	cursor: pointer;
+	font-family: 'Helvetica', 'Arial', sans-serif;
+	font-size: 16px;
+	font-weight: 200;
+	margin: 10px auto;
+	padding: 6px;
+	-webkit-border-radius: 3px;
+	width: 100px;
+}
+
+.TeXEditor-removeButton {
+	border-color: #aaa;
+	color: #999;
+	margin-left: 8px;
+}
+
+.TeXEditor-invalidButton {
+	background-color: #eee;
+	border-color: #a00;
+	color: #666;
+}
+
+.TeXEditor-insert {
+	background-color: #f1f1f1;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	margin-left: 5px;
+}

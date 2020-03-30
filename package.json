@@ -1,0 +1,23 @@
+{
+  "name": "prepleaf-editor",
+  "version": "1.0.0",
+  "description": "Editor used by Prepleaf",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "npm run test",
+    "build": "npm run build"
+  },
+  "author": "asaharan812@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "draft-js": "^0.11.5",
+    "katex": "^0.11.1",
+    "react": "^16.13.1"
+  },
+  "devDependencies": {
+    "react-dom": "^16.13.1"
+  }
+}

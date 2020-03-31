@@ -149,6 +149,7 @@ export class TeXEditor extends React.Component {
 	}
 
 	_blockRenderer = block => {
+		const { getImagePolicy } = this.props;
 		if (block.getType() === 'atomic') {
 			const contentState = this.state.editorState.getCurrentContent();
 			const type = contentState.getEntity(block.getEntityAt(0)).getType();
@@ -194,7 +195,7 @@ export class TeXEditor extends React.Component {
 							});
 						},
 						onRemove: blockKey => this._removeTeX(blockKey),
-						firebaseApp: this.props.firebaseApp,
+						getImagePolicy,
 					},
 				};
 			}

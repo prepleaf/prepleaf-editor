@@ -29,7 +29,7 @@ export default {
 			},
 		}),
 		injectProcessEnv({
-			NODE_ENV: 'production',
+			NODE_ENV: 'development',
 		}),
 		// When we're building for production (npm run build
 		// instead of npm run dev), minify

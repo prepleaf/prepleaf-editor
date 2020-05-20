@@ -86,7 +86,7 @@ export class TeXEditor extends React.Component {
 			imageEdits: Map(),
 		};
 
-		this._focus = () => this.refs.editor.focus();
+		this._focus = () => this.editorRef.focus();
 		this._onChange = (editorState) => this.setState({ editorState });
 
 		this._toggleName = (editorState, name) => {
@@ -300,7 +300,7 @@ export class TeXEditor extends React.Component {
 							readOnly={
 								this.state.liveTeXEdits.count() || this.state.imageEdits.count()
 							}
-							ref="editor"
+							ref={this.handleEditorRef}
 							spellCheck={true}
 						/>
 					</div>
@@ -308,6 +308,10 @@ export class TeXEditor extends React.Component {
 			</div>
 		);
 	}
+
+	handleEditorRef = (ref) => {
+		this.editorRef = ref;
+	};
 }
 
 export default TeXEditor;

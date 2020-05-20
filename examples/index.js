@@ -6,7 +6,7 @@ const rootElement = document.getElementById('root');
 
 const apiBaseUrl = 'http://localhost:4040/api/questions';
 
-const getImagePolicy = file => {
+const getImagePolicy = (file) => {
 	const token = localStorage.getItem('token');
 	return fetch(
 		apiBaseUrl + '/get-question-image-upload-policy?name=' + file.name,
@@ -19,7 +19,7 @@ const getImagePolicy = file => {
 			},
 			credentials: 'include',
 		}
-	).then(res => {
+	).then((res) => {
 		if (res.ok) {
 			return res.json();
 		} else {
@@ -28,4 +28,12 @@ const getImagePolicy = file => {
 	});
 };
 
-ReactDOM.render(React.createElement(Editor, { getImagePolicy }), rootElement);
+ReactDOM.render(
+	React.createElement(Editor, {
+		getImagePolicy,
+		customRef: (ref) => {
+			console.log({ ref });
+		},
+	}),
+	rootElement
+);

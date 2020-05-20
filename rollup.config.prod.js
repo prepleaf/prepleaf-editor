@@ -28,9 +28,6 @@ export default {
 				immutable: Object.keys(immutablejs),
 			},
 		}),
-		injectProcessEnv({
-			NODE_ENV: 'development',
-		}),
 		// When we're building for production (npm run build
 		// instead of npm run dev), minify
 		terser(),

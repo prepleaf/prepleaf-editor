@@ -1,17 +1,6 @@
-'use strict';
-
 import { Map } from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import TeXBlock from './TeXBlock';
-import ImageBlock from './ImageBlock';
-import { insertTeXBlock } from './modifiers/insertTeXBlock';
-import { removeTeXBlock } from './modifiers/removeTeXBlock';
-import { insertImageBlock } from './modifiers/insertImageBlock';
-import 'draft-js/dist/Draft.css';
-import 'katex/dist/katex.min.css';
-import './main.css';
 import {
 	Editor,
 	EditorState,
@@ -21,6 +10,21 @@ import {
 	getDefaultKeyBinding,
 	KeyBindingUtil,
 } from 'draft-js';
+import 'draft-js/dist/Draft.css';
+import 'katex/dist/katex.min.css';
+
+import TeXBlock from './TeXBlock';
+import ImageBlock from './ImageBlock';
+import { insertTeXBlock } from './modifiers/insertTeXBlock';
+import { removeTeXBlock } from './modifiers/removeTeXBlock';
+import {
+	insertInlineEquation,
+	INLINE_EQUATION,
+} from './modifiers/insertInlineEquation';
+import { insertImageBlock } from './modifiers/insertImageBlock';
+import decorators from './decorators';
+import InlineEquation from './components/InlineEquation';
+import './main.css';
 
 const customStyleMap = {
 	super: { verticalAlign: 'super', fontSize: '.8rem' },
@@ -30,7 +34,7 @@ const customStyleMap = {
 
 const { hasCommandModifier } = KeyBindingUtil;
 
-const keyBindingFn = e => {
+const keyBindingFn = (e) => {
 	if (hasCommandModifier(e)) {
 		if (e.keyCode === 188) {
 			e.preventDefault();
@@ -55,7 +59,7 @@ export class TeXEditor extends React.Component {
 		const { rawContent } = props;
 		let contentEditorState;
 		if (typeof rawContent === 'undefined') {
-			contentEditorState = EditorState.createEmpty();
+			contentEditorState = EditorState.createEmpty(decorators);
 		} else {
 			let modifiedRawContent;
 			if (typeof rawContent === 'object') {
@@ -83,16 +87,19 @@ export class TeXEditor extends React.Component {
 		};
 
 		this._focus = () => this.refs.editor.focus();
-		this._onChange = editorState => this.setState({ editorState });
+		this._onChange = (editorState) => this.setState({ editorState });
 
 		this._toggleName = (editorState, name) => {
 			this._onChange(RichUtils.toggleInlineStyle(editorState, name));
 		};
 
 		this._handleKeyCommand = (command, editorState) => {
-			if (['super', 'sub', 'equation'].indexOf(command) > -1) {
+			if (['super', 'sub'].indexOf(command) > -1) {
 				this._toggleName(editorState, command);
 				return true;
+			}
+			if ('equation' === command) {
+				this.markAsInlineEquation();
 			}
 
 			var newState = RichUtils.handleKeyCommand(editorState, command);
@@ -103,7 +110,7 @@ export class TeXEditor extends React.Component {
 			return false;
 		};
 
-		this._removeTeX = blockKey => {
+		this._removeTeX = (blockKey) => {
 			var { editorState, liveTeXEdits, imageEdits } = this.state;
 			this.setState({
 				liveTeXEdits: liveTeXEdits.remove(blockKey),
@@ -119,8 +126,12 @@ export class TeXEditor extends React.Component {
 			});
 		};
 	}
-
-	toggleSuper = e => {
+	markAsInlineEquation = () => {
+		this.setState({
+			editorState: insertInlineEquation(this.state.editorState),
+		});
+	};
+	toggleSuper = (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 		const { editorState } = this.state;
@@ -148,7 +159,7 @@ export class TeXEditor extends React.Component {
 		};
 	}
 
-	_blockRenderer = block => {
+	_blockRenderer = (block) => {
 		const { getImagePolicy } = this.props;
 		if (block.getType() === 'atomic') {
 			const contentState = this.state.editorState.getCurrentContent();
@@ -158,7 +169,7 @@ export class TeXEditor extends React.Component {
 					component: TeXBlock,
 					editable: false,
 					props: {
-						onStartEdit: blockKey => {
+						onStartEdit: (blockKey) => {
 							var { liveTeXEdits } = this.state;
 							this.setState({
 								liveTeXEdits: liveTeXEdits.set(blockKey, true),
@@ -171,7 +182,7 @@ export class TeXEditor extends React.Component {
 								editorState: EditorState.createWithContent(newContentState),
 							});
 						},
-						onRemove: blockKey => this._removeTeX(blockKey),
+						onRemove: (blockKey) => this._removeTeX(blockKey),
 					},
 				};
 			}
@@ -181,7 +192,7 @@ export class TeXEditor extends React.Component {
 					component: ImageBlock,
 					editable: false,
 					props: {
-						onStartEdit: blockKey => {
+						onStartEdit: (blockKey) => {
 							var { imageEdits } = this.state;
 							this.setState({
 								imageEdits: imageEdits.set(blockKey, true),
@@ -194,11 +205,29 @@ export class TeXEditor extends React.Component {
 								editorState: EditorState.createWithContent(newContentState),
 							});
 						},
-						onRemove: blockKey => this._removeTeX(blockKey),
+						onRemove: (blockKey) => this._removeTeX(blockKey),
 						getImagePolicy,
 					},
 				};
 			}
+			if (type === INLINE_EQUATION) {
+				return {
+					component: InlineEquation,
+				};
+			}
+		} else if (block.getType() === 'unstyled') {
+			block.findEntityRanges(
+				(v) => {
+					if (v.getEntity()) {
+						return true;
+					}
+					return false;
+				},
+				(start, end) => {
+					// console.log(start, end);
+					// console.log(block.getEntityAt(start));
+				}
+			);
 		}
 		return null;
 	};
@@ -227,6 +256,9 @@ export class TeXEditor extends React.Component {
 		return (
 			<div className="TexEditor-container">
 				<div className="TeXEditor-toolbar">
+					{/* <button onMouseDown={this.markAsInlineEquation}>
+						Mark as inline equation
+					</button> */}
 					<button onMouseDown={this.toggleEquation} className="TeXEditor-insert">
 						inline equation
 					</button>

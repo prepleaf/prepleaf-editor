@@ -15,14 +15,14 @@ class ImageBlock extends React.Component {
 		this.reader = new FileReader();
 		this.reader.addEventListener(
 			'load',
-			function(result) {
+			function (result) {
 				self.save(result.srcElement['result']);
 			},
 			false
 		);
 	}
 
-	handleClick = e => {
+	handleClick = (e) => {
 		if (this.state.editMode) {
 			return;
 		}
@@ -37,7 +37,7 @@ class ImageBlock extends React.Component {
 		);
 	};
 
-	finishEdit = newContentState => {
+	finishEdit = (newContentState) => {
 		this.props.blockProps.onFinishEdit(
 			this.props.block.getKey(),
 			newContentState
@@ -47,11 +47,11 @@ class ImageBlock extends React.Component {
 		this.props.blockProps.onStartEdit(this.props.block.getKey());
 	};
 
-	handleSaveClick = e => {
+	handleSaveClick = (e) => {
 		this.uploadImage(this.file);
 	};
 
-	save = url => {
+	save = (url) => {
 		var entityKey = this.props.block.getEntityAt(0);
 		var newContentState = this.props.contentState.mergeEntityData(entityKey, {
 			url: url,
@@ -65,16 +65,16 @@ class ImageBlock extends React.Component {
 		);
 	};
 
-	cancel = e => {
+	cancel = (e) => {
 		this.setState({
 			editMode: false,
 			url: null,
 		});
 	};
-	remove = e => {
+	remove = (e) => {
 		this.props.blockProps.onRemove(this.props.block.getKey());
 	};
-	handleFileChange = e => {
+	handleFileChange = (e) => {
 		this.file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
 	};
 	randomName = () => {
@@ -91,14 +91,14 @@ class ImageBlock extends React.Component {
 		return makeid() + Date.now();
 	};
 
-	uploadImage = file => {
+	uploadImage = (file) => {
 		const { getImagePolicy } = this.props.blockProps;
 		getImagePolicy(file)
 			.then(({ policy, success }) => {
 				if (success) {
 					const fullURL = policy.url + '/' + policy.fields.key;
 					const formData = new FormData();
-					Object.keys(policy.fields).forEach(key => {
+					Object.keys(policy.fields).forEach((key) => {
 						const value = policy.fields[key];
 						formData.append(key, value);
 					});
@@ -114,7 +114,7 @@ class ImageBlock extends React.Component {
 					alert('Some error occurred while uploading image');
 				}
 			})
-			.catch(error => {
+			.catch((error) => {
 				console.log(`error occurred`, error);
 			});
 		// this.reader.readAsDataURL(file)
@@ -164,7 +164,7 @@ const ImageBlockStateless = ({
 		setEditMode(true);
 	};
 
-	const handleUploadSuccess = newUrl => {
+	const handleUploadSuccess = (newUrl) => {
 		var entityKey = block.getEntityAt(0);
 		var newContentState = contentState.mergeEntityData(entityKey, {
 			url: newUrl,
@@ -182,7 +182,7 @@ const ImageBlockStateless = ({
 				if (success) {
 					const fullURL = policy.url + '/' + policy.fields.key;
 					const formData = new FormData();
-					Object.keys(policy.fields).forEach(key => {
+					Object.keys(policy.fields).forEach((key) => {
 						const value = policy.fields[key];
 						formData.append(key, value);
 					});
@@ -192,7 +192,7 @@ const ImageBlockStateless = ({
 						headers: {},
 						body: formData,
 					})
-						.then(res => {
+						.then((res) => {
 							handleUploadSuccess(fullURL);
 						})
 						.catch(console.error);
@@ -200,33 +200,41 @@ const ImageBlockStateless = ({
 					alert('Some error occurred while uploading image');
 				}
 			})
-			.catch(error => {
+			.catch((error) => {
 				console.log(`error occurred`, error);
 			});
 	};
-	const handleSave = e => {
+	const handleSave = (e) => {
 		save();
 	};
-	const handleCancel = e => {
+	const handleCancel = (e) => {
 		e.stopPropagation();
 		setEditMode(false);
 	};
-	const handleRemove = e => {
+	const handleRemove = (e) => {
 		e.stopPropagation();
 		onRemove(block.getKey());
 	};
-	const handleFileChange = e => {
-		file.current = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+	const handleFileChange = (e) => {
+		console.log('handleFileChange called');
+		e.preventDefault();
+		// file.current = e.target.files && e.target.files[0] ? e.target.files[0] : null;
 	};
 
 	useEffect(() => {
-		console.log(
-			'useeffect',
-			contentState.getEntity(block.getEntityAt(0)).getData()['url']
-		);
-		setUrl(contentState.getEntity(block.getEntityAt(0)).getData()['url']);
+		try {
+			console.log(
+				'useeffect',
+				contentState.getEntity(block.getEntityAt(0)).getData()['url']
+			);
+			setUrl(contentState.getEntity(block.getEntityAt(0)).getData()['url']);
+		} catch (e) {
+			console.error(e);
+		}
 	}, [contentState]);
-	const src = contentState.getEntity(block.getEntityAt(0)).getData()['url'];
+	const entity = contentState.getEntity(block.getEntityAt(0));
+	console.log(entity.getData(), block.getEntityAt(0));
+	const src = entity ? entity.getData()['url'] : null;
 
 	return (
 		<div onClick={enableEditMode} style={{ textAlign: 'center' }}>
@@ -248,4 +256,4 @@ const ImageBlockStateless = ({
 	);
 };
 
-export default ImageBlockStateless;
+export default ImageBlock;

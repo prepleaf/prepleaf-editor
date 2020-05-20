@@ -5,6 +5,8 @@ import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import injectProcessEnv from 'rollup-plugin-inject-process-env';
 import postcss from 'rollup-plugin-postcss';
+import * as DraftJS from 'draft-js';
+import * as immutablejs from 'immutable';
 
 export default {
 	input: 'src/index.js',
@@ -27,7 +29,7 @@ export default {
 			},
 		}),
 		injectProcessEnv({
-			NODE_ENV: 'development',
+			NODE_ENV: 'production',
 		}),
 		// When we're building for production (npm run build
 		// instead of npm run dev), minify

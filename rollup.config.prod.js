@@ -11,7 +11,7 @@ import * as immutablejs from 'immutable';
 export default {
 	input: 'src/index.js',
 	output: {
-		file: 'lib/bundle.js',
+		file: 'lib/index.js',
 		format: 'cjs',
 	},
 	plugins: [

@@ -4,13 +4,19 @@ const { useEffect, useRef, useState } = React;
 class ImageBlock extends React.Component {
 	constructor(props, context) {
 		super(props, context);
+		const editMode = !props.contentState
+			.getEntity(this.props.block.getEntityAt(0))
+			.getData()['url'];
 		this.state = {
-			editMode: false,
+			editMode,
 			image: '',
 		};
 	}
 
 	componentDidMount() {
+		if (this.state.editMode) {
+			this.inputRef && this.inputRef.click();
+		}
 		let self = this;
 		this.reader = new FileReader();
 		this.reader.addEventListener(
@@ -76,6 +82,9 @@ class ImageBlock extends React.Component {
 	};
 	handleFileChange = (e) => {
 		this.file = e.target.files && e.target.files[0] ? e.target.files[0] : null;
+		if (this.file) {
+			this.handleSaveClick();
+		}
 	};
 	randomName = () => {
 		function makeid() {
@@ -136,7 +145,12 @@ class ImageBlock extends React.Component {
 					<div>
 						<div>
 							Click here to upload image
-							<input onChange={this.handleFileChange} type="file" accept="image/*" />
+							<input
+								ref={this.handleRef}
+								onChange={this.handleFileChange}
+								type="file"
+								accept="image/*"
+							/>
 						</div>
 						<div>
 							<button onClick={this.handleSaveClick}>Save</button>
@@ -149,6 +163,9 @@ class ImageBlock extends React.Component {
 			</div>
 		);
 	}
+	handleRef = (ref) => {
+		this.inputRef = ref;
+	};
 }
 
 const ImageBlockStateless = ({

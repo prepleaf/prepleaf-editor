@@ -13,7 +13,7 @@ class KatexOutput extends React.Component {
 		}
 
 		this._timer = setTimeout(() => {
-			katex.render(this.props.content, this.refs.container, {
+			katex.render(this.props.content, this.containerRef, {
 				displayMode: true,
 			});
 		}, 0);
@@ -35,8 +35,11 @@ class KatexOutput extends React.Component {
 	}
 
 	render() {
-		return <div ref="container" onClick={this.props.onClick} />;
+		return <div ref={this.handleContainerRef} onClick={this.props.onClick} />;
 	}
+	handleContainerRef = (ref) => {
+		this.containerRef = ref;
+	};
 }
 
 export default class TeXBlock extends React.Component {
@@ -60,7 +63,7 @@ export default class TeXBlock extends React.Component {
 			);
 		};
 
-		this._onValueChange = evt => {
+		this._onValueChange = (evt) => {
 			var value = evt.target.value;
 			var invalid = false;
 			try {
@@ -96,7 +99,7 @@ export default class TeXBlock extends React.Component {
 		this._startEdit = () => {
 			this.props.blockProps.onStartEdit(this.props.block.getKey());
 		};
-		this._finishEdit = newContentState => {
+		this._finishEdit = (newContentState) => {
 			this.props.blockProps.onFinishEdit(
 				this.props.block.getKey(),
 				newContentState
@@ -139,7 +142,6 @@ export default class TeXBlock extends React.Component {
 					<textarea
 						className="TeXEditor-texValue"
 						onChange={this._onValueChange}
-						ref="textarea"
 						value={this.state.texValue}
 					/>
 					<div className="TeXEditor-buttons">

@@ -162,7 +162,7 @@ class ImageBlock extends React.Component {
 						</div>
 						<div>
 							<button disabled={isUploading} onClick={this.handleSaveClick}>
-								Save
+								{isUploading ? 'Saving...' : 'Save'}
 							</button>
 							<button onClick={this.cancel}>Cancel</button>
 							<button onClick={this.remove}>Remove</button>

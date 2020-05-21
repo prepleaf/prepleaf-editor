@@ -35,6 +35,10 @@ const customStyleMap = {
 const { hasCommandModifier } = KeyBindingUtil;
 
 const keyBindingFn = (e) => {
+	console.log(e.keyCode);
+	if (e.keyCode === 120) {
+		return 'insert_image';
+	}
 	if (hasCommandModifier(e)) {
 		if (e.keyCode === 188) {
 			e.preventDefault();
@@ -100,6 +104,10 @@ export class TeXEditor extends React.Component {
 			}
 			if ('equation' === command) {
 				this.markAsInlineEquation();
+			}
+
+			if ('insert_image' === command) {
+				this._insertImage();
 			}
 
 			var newState = RichUtils.handleKeyCommand(editorState, command);

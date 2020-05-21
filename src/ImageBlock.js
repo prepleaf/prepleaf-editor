@@ -54,7 +54,9 @@ class ImageBlock extends React.Component {
 	};
 
 	handleSaveClick = (e) => {
-		this.uploadImage(this.file);
+		if (this.file) {
+			this.uploadImage(this.file);
+		}
 	};
 
 	save = (url) => {
@@ -102,35 +104,41 @@ class ImageBlock extends React.Component {
 
 	uploadImage = (file) => {
 		const { getImagePolicy } = this.props.blockProps;
-		getImagePolicy(file)
-			.then(({ policy, success }) => {
-				if (success) {
-					const fullURL = policy.url + '/' + policy.fields.key;
-					const formData = new FormData();
-					Object.keys(policy.fields).forEach((key) => {
-						const value = policy.fields[key];
-						formData.append(key, value);
-					});
-					formData.append('file', file);
-					fetch(policy.url, {
-						method: 'POST',
-						headers: {},
-						body: formData,
-					}).then(() => {
-						this.save(fullURL);
-					});
-				} else {
-					alert('Some error occurred while uploading image');
-				}
-			})
-			.catch((error) => {
-				console.log(`error occurred`, error);
-			});
+		this.setState({ isUploading: true });
+		setTimeout(() => {
+			getImagePolicy(file)
+				.then(({ policy, success }) => {
+					if (success) {
+						const fullURL = policy.url + '/' + policy.fields.key;
+						const formData = new FormData();
+						Object.keys(policy.fields).forEach((key) => {
+							const value = policy.fields[key];
+							formData.append(key, value);
+						});
+						formData.append('file', file);
+						fetch(policy.url, {
+							method: 'POST',
+							headers: {},
+							body: formData,
+						}).then(() => {
+							this.save(fullURL);
+							this.setState({ isUploading: false });
+						});
+					} else {
+						this.setState({ isUploading: false });
+						alert('Some error occurred while uploading image');
+					}
+				})
+				.catch((error) => {
+					this.setState({ isUploading: false });
+					console.log(`error occurred`, error);
+				});
+		}, [2000]);
 		// this.reader.readAsDataURL(file)
 	};
 
 	render() {
-		const { editMode } = this.state;
+		const { editMode, isUploading } = this.state;
 		var url;
 		if (editMode) {
 			url = this.state.url;
@@ -153,7 +161,9 @@ class ImageBlock extends React.Component {
 							/>
 						</div>
 						<div>
-							<button onClick={this.handleSaveClick}>Save</button>
+							<button disabled={isUploading} onClick={this.handleSaveClick}>
+								Save
+							</button>
 							<button onClick={this.cancel}>Cancel</button>
 							<button onClick={this.remove}>Remove</button>
 						</div>

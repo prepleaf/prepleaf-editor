@@ -24,6 +24,7 @@ import {
 import { insertImageBlock } from './modifiers/insertImageBlock';
 import decorators from './decorators';
 import InlineEquation from './components/InlineEquation';
+import Button from './Button';
 import './main.css';
 
 const customStyleMap = {
@@ -286,30 +287,27 @@ export class TeXEditor extends React.Component {
 		return (
 			<div className="prepleaf-editor">
 				<div className="TeXEditor-toolbar">
-					{/* <button onMouseDown={this.markAsInlineEquation}>
-						Mark as inline equation
-					</button> */}
-					<button
+					<Button
 						onMouseDown={this.toggleEquation}
 						className="TeXEditor-insert-button"
 					>
 						inline equation
-					</button>
-					<button onMouseDown={this.toggleSub} className="TeXEditor-insert-button">
+					</Button>
+					<Button onMouseDown={this.toggleSub} className="TeXEditor-insert-button">
 						X<sub>2</sub>
-					</button>
-					<button onMouseDown={this.toggleSuper} className="TeXEditor-insert-button">
+					</Button>
+					<Button onMouseDown={this.toggleSuper} className="TeXEditor-insert-button">
 						X<sup>2</sup>
-					</button>
-					<button onMouseDown={this._insertTeX} className="TeXEditor-insert-button">
+					</Button>
+					<Button onMouseDown={this._insertTeX} className="TeXEditor-insert-button">
 						Equation
-					</button>
-					<button
+					</Button>
+					<Button
 						onMouseDown={this._insertImage}
 						className="TeXEditor-insert-button"
 					>
 						Image
-					</button>
+					</Button>
 				</div>
 				<div className="TeXEditor-root">
 					<div

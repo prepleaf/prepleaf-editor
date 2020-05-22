@@ -1,14 +1,36 @@
-.TexEditor-container {
+.prepleaf-editor {
 	display: flex;
 	flex-direction: column;
 	flex: 1;
 	align-items: center;
+	margin: 5px auto;
+}
+
+.prepleaf-editor *:after,
+.prepleaf-editor *:before,
+.prepleaf-editor *,
+.prepleaf-editor {
+	box-sizing: border-box;
+}
+
+.TeXEditor-toolbar {
+	display: flex;
+	width: 100%;
+	border-left: solid 1px #999;
+	border-top: solid 1px #999;
+	border-right: solid 1px #999;
+}
+.TeXEditor-insert-button {
+	border: none;
+	color: #333;
+	padding: 8px 16px;
+	border-right: solid 1px #999;
 }
 
 .TeXEditor-root {
 	font-family: 'Century Schoolbook', serif;
 	-webkit-font-smoothing: antialiased;
-	margin: 5px auto;
+	margin: 0 auto;
 	flex: 1;
 	width: 100%;
 }

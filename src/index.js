@@ -261,37 +261,57 @@ export class TeXEditor extends React.Component {
 	 * have a textarea within the DOM.
 	 */
 	render() {
+		const { readOnly } = this.props;
+		if (readOnly) {
+			return (
+				<div>
+					<Editor
+						customStyleMap={customStyleMap}
+						blockRendererFn={this._blockRenderer}
+						editorState={this.state.editorState}
+						handleKeyCommand={this._handleKeyCommand}
+						keyBindingFn={keyBindingFn}
+						onChange={this._onChange}
+						readOnly={
+							readOnly ||
+							this.state.liveTeXEdits.count() ||
+							this.state.imageEdits.count()
+						}
+						ref={this.handleEditorRef}
+						spellCheck={true}
+					/>
+				</div>
+			);
+		}
 		return (
-			<div className="TexEditor-container">
+			<div className="prepleaf-editor">
 				<div className="TeXEditor-toolbar">
 					{/* <button onMouseDown={this.markAsInlineEquation}>
 						Mark as inline equation
 					</button> */}
-					<button onMouseDown={this.toggleEquation} className="TeXEditor-insert">
+					<button
+						onMouseDown={this.toggleEquation}
+						className="TeXEditor-insert-button"
+					>
 						inline equation
 					</button>
-					<button onMouseDown={this.toggleSub} className="TeXEditor-insert">
+					<button onMouseDown={this.toggleSub} className="TeXEditor-insert-button">
 						X<sub>2</sub>
 					</button>
-					<button onMouseDown={this.toggleSuper} className="TeXEditor-insert">
+					<button onMouseDown={this.toggleSuper} className="TeXEditor-insert-button">
 						X<sup>2</sup>
 					</button>
-					<button onMouseDown={this._insertTeX} className="TeXEditor-insert">
+					<button onMouseDown={this._insertTeX} className="TeXEditor-insert-button">
 						Equation
 					</button>
-					<button onMouseDown={this._insertImage} className="TeXEditor-insert">
+					<button
+						onMouseDown={this._insertImage}
+						className="TeXEditor-insert-button"
+					>
 						Image
 					</button>
 				</div>
 				<div className="TeXEditor-root">
-					<div style={{ display: 'none' }}>
-						<a
-							href="https://khan.github.io/KaTeX/function-support.html"
-							target="_blank"
-						>
-							For function support click here
-						</a>
-					</div>
 					<div
 						className="TeXEditor-editor"
 						style={{ border: 'solid 1px #777' }}
@@ -306,7 +326,9 @@ export class TeXEditor extends React.Component {
 							onChange={this._onChange}
 							placeholder="Start a document..."
 							readOnly={
-								this.state.liveTeXEdits.count() || this.state.imageEdits.count()
+								readOnly ||
+								this.state.liveTeXEdits.count() ||
+								this.state.imageEdits.count()
 							}
 							ref={this.handleEditorRef}
 							spellCheck={true}
@@ -321,5 +343,13 @@ export class TeXEditor extends React.Component {
 		this.editorRef = ref;
 	};
 }
+
+TeXEditor.propTypes = {
+	readOnly: PropTypes.bool.required,
+};
+
+TeXEditor.defaultProps = {
+	readOnly: false,
+};
 
 export default TeXEditor;

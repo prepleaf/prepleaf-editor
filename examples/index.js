@@ -34,6 +34,7 @@ ReactDOM.render(
 		customRef: (ref) => {
 			console.log({ ref });
 		},
+		readOnly: false,
 	}),
 	rootElement
 );

@@ -36,6 +36,15 @@ const customStyleMap = {
 
 const { hasCommandModifier } = KeyBindingUtil;
 
+const katexCssCdn = (
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css"
+		integrity="sha256-V8SV2MO1FUb63Bwht5Wx9x6PVHNa02gv8BgH/uH3ung="
+		crossOrigin="anonymous"
+	/>
+);
+
 const keyBindingFn = (e) => {
 	console.log(e.keyCode);
 	if (e.keyCode === 120) {
@@ -267,6 +276,7 @@ export class TeXEditor extends React.Component {
 		if (readOnly) {
 			return (
 				<div>
+					{katexCssCdn}
 					<Editor
 						customStyleMap={customStyleMap}
 						blockRendererFn={this._blockRenderer}
@@ -287,12 +297,7 @@ export class TeXEditor extends React.Component {
 		}
 		return (
 			<div className="prepleaf-editor">
-				<link
-					rel="stylesheet"
-					href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css"
-					integrity="sha256-V8SV2MO1FUb63Bwht5Wx9x6PVHNa02gv8BgH/uH3ung="
-					crossorigin="anonymous"
-				/>
+				{katexCssCdn}
 				<div className="TeXEditor-toolbar">
 					<Button
 						onMouseDown={this.toggleEquation}
@@ -350,7 +355,7 @@ export class TeXEditor extends React.Component {
 }
 
 TeXEditor.propTypes = {
-	readOnly: PropTypes.bool.required,
+	readOnly: PropTypes.bool.isRequired,
 };
 
 TeXEditor.defaultProps = {

@@ -1,13 +1,13 @@
 {
 	"name": "prepleaf-editor",
-	"version": "1.0.12",
+	"version": "1.0.13",
 	"description": "Editor used by Prepleaf",
 	"main": "lib/index.js",
 	"directories": {
 		"lib": "lib"
 	},
 	"scripts": {
-		"start": "sirv -p 3000 examples",
+		"start": "sirv -p 3030 examples",
 		"dev": "rollup -c rollup.config.dev.js -w",
 		"test": "npm run test",
 		"build": "rollup -c rollup.config.prod.js --environment INCLUDE_DEPS,BUILD:production"

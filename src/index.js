@@ -11,7 +11,8 @@ import {
 	KeyBindingUtil,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
-import 'katex/dist/katex.min.css';
+// import 'katex/dist/katex.min.css';
+// use katex.min.css from cdn
 
 import TeXBlock from './TeXBlock';
 import ImageBlock from './ImageBlock';
@@ -286,6 +287,12 @@ export class TeXEditor extends React.Component {
 		}
 		return (
 			<div className="prepleaf-editor">
+				<link
+					rel="stylesheet"
+					href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css"
+					integrity="sha256-V8SV2MO1FUb63Bwht5Wx9x6PVHNa02gv8BgH/uH3ung="
+					crossorigin="anonymous"
+				/>
 				<div className="TeXEditor-toolbar">
 					<Button
 						onMouseDown={this.toggleEquation}

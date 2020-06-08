@@ -1,5 +1,6 @@
 import React from 'react';
-const inlineEquationRegex = /\\ie (.*?) \\ie/g;
+import { KatexOutput } from '../TeXBlock';
+const inlineEquationRegex = /\$(.*?)\$/g;
 
 function findWithRegex(regex, contentBlock, callback) {
 	const text = contentBlock.getText();
@@ -11,7 +12,7 @@ function findWithRegex(regex, contentBlock, callback) {
 }
 
 const strategy = (contentBlock, callback, contentState) => {
-	return findWithRegex(inlineEquationRegex, contentBlock, callback);
+	return findWithRegex(new RegExp(inlineEquationRegex), contentBlock, callback);
 };
 const InlineEquation = ({
 	blockKey,
@@ -19,11 +20,26 @@ const InlineEquation = ({
 	decoratedText,
 	children,
 }) => {
-	console.log('yoyoyo');
 	console.log(decoratedText);
 	const matchResult = inlineEquationRegex.exec(decoratedText);
 	const matchedText = matchResult && matchResult[1];
-	// console.log(inlineEquationRegex.exec(decoratedText));
-	return <span style={{ backgroundColor: 'red' }}>{children}</span>;
+	return (
+		<span style={{ backgroundColor: '', display: 'inline-block' }}>
+			<KatexOutput
+				inline
+				content={decoratedText.substring(1, decoratedText.length - 1)}
+			/>
+			<span
+				style={{
+					width: '0',
+					height: 0,
+					overflow: 'hidden',
+					display: 'inline-block',
+				}}
+			>
+				{children}
+			</span>
+		</span>
+	);
 };
 export default { strategy, component: InlineEquation };

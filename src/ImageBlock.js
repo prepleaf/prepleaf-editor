@@ -4,18 +4,28 @@ const { useEffect, useRef, useState } = React;
 class ImageBlock extends React.Component {
 	constructor(props, context) {
 		super(props, context);
-		const editMode = !props.contentState
+		let editMode = !props.contentState
 			.getEntity(this.props.block.getEntityAt(0))
 			.getData()['url'];
+		this.fileToUpload = props.contentState
+			.getEntity(this.props.block.getEntityAt(0))
+			.getData().file;
+		if (this.fileToUpload) {
+			editMode = false;
+		}
 		this.state = {
 			editMode,
 			image: '',
+			uploadOnMount: !!this.fileToUpload,
 		};
 	}
 
 	componentDidMount() {
 		if (this.state.editMode) {
 			this.inputRef && this.inputRef.click();
+		}
+		if (this.state.uploadOnMount) {
+			this.uploadImage(this.fileToUpload);
 		}
 		let self = this;
 		this.reader = new FileReader();
@@ -26,6 +36,14 @@ class ImageBlock extends React.Component {
 			},
 			false
 		);
+	}
+
+	componentDidUpdate() {
+		console.log({
+			imageData: this.props.contentState
+				.getEntity(this.props.block.getEntityAt(0))
+				.getData(),
+		});
 	}
 
 	handleClick = (e) => {
@@ -63,7 +81,9 @@ class ImageBlock extends React.Component {
 		var entityKey = this.props.block.getEntityAt(0);
 		var newContentState = this.props.contentState.mergeEntityData(entityKey, {
 			url: url,
+			file: undefined,
 		});
+		console.log(newContentState.toObject());
 		this.setState(
 			{
 				editMode: false,
@@ -74,10 +94,13 @@ class ImageBlock extends React.Component {
 	};
 
 	cancel = (e) => {
-		this.setState({
-			editMode: false,
-			url: null,
-		});
+		this.setState(
+			{
+				editMode: false,
+				url: null,
+			},
+			() => this.finishEdit(this.props.contentState)
+		);
 	};
 	remove = (e) => {
 		this.props.blockProps.onRemove(this.props.block.getKey());

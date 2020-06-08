@@ -16,13 +16,13 @@ const examples = [
 		'{1+\\frac{e^{-8\\pi}} {1+\\ldots} } } }',
 ];
 
-export function insertTeXBlock(editorState) {
+export function insertTeXBlock(editorState, formula) {
 	const contentState = editorState.getCurrentContent();
 	const nextFormula = count++ % examples.length;
 	const contentStateWithEntity = contentState.createEntity(
 		'TOKEN',
 		'IMMUTABLE',
-		{ content: examples[nextFormula] }
+		{ content: formula || examples[nextFormula] }
 	);
 	const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 	const newEditorState = EditorState.set(editorState, {

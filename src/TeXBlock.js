@@ -1,7 +1,7 @@
 import React from 'react';
 import katex from 'katex';
 
-class KatexOutput extends React.Component {
+export class KatexOutput extends React.Component {
 	constructor(props) {
 		super(props);
 		this._timer = null;
@@ -35,7 +35,17 @@ class KatexOutput extends React.Component {
 	}
 
 	render() {
-		return <div ref={this.handleContainerRef} onClick={this.props.onClick} />;
+		let Component = 'div';
+		if (this.props.inline) {
+			Component = 'span';
+		}
+		return (
+			<Component
+				className={`${this.props.inline ? 'inline-katex-wrapper' : ''}`}
+				ref={this.handleContainerRef}
+				onClick={this.props.onClick}
+			/>
+		);
 	}
 	handleContainerRef = (ref) => {
 		this.containerRef = ref;

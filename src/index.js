@@ -11,8 +11,6 @@ import {
 	KeyBindingUtil,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
-// import 'katex/dist/katex.min.css';
-// use katex.min.css from cdn
 
 import TeXBlock from './TeXBlock';
 import ImageBlock from './ImageBlock';
@@ -46,7 +44,7 @@ const katexCssCdn = (
 );
 
 const keyBindingFn = (e) => {
-	console.log(e.keyCode);
+	// console.log(e.keyCode);
 	if (e.keyCode === 120) {
 		return 'insert_image';
 	}
@@ -91,7 +89,8 @@ export class TeXEditor extends React.Component {
 				};
 			}
 			contentEditorState = EditorState.createWithContent(
-				convertFromRaw(modifiedRawContent)
+				convertFromRaw(modifiedRawContent),
+				decorators
 			);
 		}
 
@@ -198,7 +197,7 @@ export class TeXEditor extends React.Component {
 							var { liveTeXEdits } = this.state;
 							this.setState({
 								liveTeXEdits: liveTeXEdits.remove(blockKey),
-								editorState: EditorState.createWithContent(newContentState),
+								editorState: EditorState.createWithContent(newContentState, decorators),
 							});
 						},
 						onRemove: (blockKey) => this._removeTeX(blockKey),
@@ -221,7 +220,7 @@ export class TeXEditor extends React.Component {
 							var { imageEdits } = this.state;
 							this.setState({
 								imageEdits: imageEdits.remove(blockKey),
-								editorState: EditorState.createWithContent(newContentState),
+								editorState: EditorState.createWithContent(newContentState, decorators),
 							});
 						},
 						onRemove: (blockKey) => this._removeTeX(blockKey),
@@ -299,27 +298,37 @@ export class TeXEditor extends React.Component {
 			<div className="prepleaf-editor">
 				{katexCssCdn}
 				<div className="TeXEditor-toolbar">
-					<Button
-						onMouseDown={this.toggleEquation}
-						className="TeXEditor-insert-button"
-					>
-						inline equation
-					</Button>
-					<Button onMouseDown={this.toggleSub} className="TeXEditor-insert-button">
-						X<sub>2</sub>
-					</Button>
-					<Button onMouseDown={this.toggleSuper} className="TeXEditor-insert-button">
-						X<sup>2</sup>
-					</Button>
-					<Button onMouseDown={this._insertTeX} className="TeXEditor-insert-button">
-						Equation
-					</Button>
-					<Button
-						onMouseDown={this._insertImage}
-						className="TeXEditor-insert-button"
-					>
-						Image
-					</Button>
+					<div className="TeXEditor-toolbar-list">
+						<Button
+							onMouseDown={this.toggleEquation}
+							className="TeXEditor-insert-button hidden"
+						>
+							inline equation
+						</Button>
+						<Button onMouseDown={this.toggleSub} className="TeXEditor-insert-button">
+							X<sub>2</sub>
+						</Button>
+						<Button
+							onMouseDown={this.toggleSuper}
+							className="TeXEditor-insert-button"
+						>
+							X<sup>2</sup>
+						</Button>
+						<Button onMouseDown={this._insertTeX} className="TeXEditor-insert-button">
+							Equation
+						</Button>
+						<Button
+							onMouseDown={this._insertImage}
+							className="TeXEditor-insert-button"
+						>
+							Image
+						</Button>
+					</div>
+					<div>
+						<div style={{ display: 'none' }}>
+							For inline eqn use $equatoin in here$: $\frac{'{2}{3}$'}
+						</div>
+					</div>
 				</div>
 				<div className="TeXEditor-root">
 					<div
@@ -328,6 +337,33 @@ export class TeXEditor extends React.Component {
 						onClick={this._focus}
 					>
 						<Editor
+							handlePastedFiles={(files) => {
+								const { editorState } = this.state;
+								console.log(files[0]);
+								this.setState({ editorState: insertImageBlock(editorState, files[0]) });
+								return 'handled';
+							}}
+							handleDroppedFiles={(selection, files) => {
+								// console.log(selection.toObject(), files);
+								const updatedSelectionEditorState = EditorState.acceptSelection(
+									this.state.editorState,
+									selection
+								);
+								this.setState({
+									editorState: insertImageBlock(updatedSelectionEditorState, files[0]),
+								});
+								return 'handled';
+							}}
+							handlePastedText={(text, html, editorState) => {
+								if (text.indexOf('$$') === 0 && text.substring(text.length - 2)) {
+									const content = text.substring(2, text.length - 2);
+									this.setState({
+										editorState: insertTeXBlock(editorState, content),
+									});
+									return 'handled';
+								}
+								return 'not-handled';
+							}}
 							customStyleMap={customStyleMap}
 							blockRendererFn={this._blockRenderer}
 							editorState={this.state.editorState}

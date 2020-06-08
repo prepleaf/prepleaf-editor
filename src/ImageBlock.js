@@ -162,6 +162,7 @@ class ImageBlock extends React.Component {
 
 	render() {
 		const { editMode, isUploading } = this.state;
+		const { readOnly } = this.props.blockProps;
 		var url;
 		if (editMode) {
 			url = this.state.url;
@@ -171,7 +172,10 @@ class ImageBlock extends React.Component {
 				.getData()['url'];
 		}
 		return (
-			<div onClick={this.handleClick} style={{ textAlign: 'center' }}>
+			<div
+				onClick={readOnly ? undefined : this.handleClick}
+				style={{ cursor: 'default', textAlign: 'center' }}
+			>
 				{editMode ? (
 					<div>
 						<div>
@@ -200,110 +204,5 @@ class ImageBlock extends React.Component {
 		this.inputRef = ref;
 	};
 }
-
-const ImageBlockStateless = ({
-	blockProps: { onRemove, onFinishEdit, getImagePolicy },
-	block,
-	contentState,
-}) => {
-	const file = useRef();
-	const [isEditMode, setEditMode] = useState(false);
-	const [image, setImage] = useState('');
-	const [url, setUrl] = useState(null);
-	const enableEditMode = () => {
-		setEditMode(true);
-	};
-
-	const handleUploadSuccess = (newUrl) => {
-		var entityKey = block.getEntityAt(0);
-		var newContentState = contentState.mergeEntityData(entityKey, {
-			url: newUrl,
-		});
-		console.log(block.getKey(), newContentState);
-		setEditMode(false);
-		const newBlock = newContentState.getBlockForKey(block.getKey());
-		const newEntity = block.getEntityAt(0);
-		console.log(newBlock, newEntity, newContentState.getEntity(newEntity));
-		onFinishEdit(block.getKey(), newContentState);
-	};
-	const save = () => {
-		getImagePolicy(file.current)
-			.then(({ policy, success }) => {
-				if (success) {
-					const fullURL = policy.url + '/' + policy.fields.key;
-					const formData = new FormData();
-					Object.keys(policy.fields).forEach((key) => {
-						const value = policy.fields[key];
-						formData.append(key, value);
-					});
-					formData.append('file', file.current);
-					fetch(policy.url, {
-						method: 'POST',
-						headers: {},
-						body: formData,
-					})
-						.then((res) => {
-							handleUploadSuccess(fullURL);
-						})
-						.catch(console.error);
-				} else {
-					alert('Some error occurred while uploading image');
-				}
-			})
-			.catch((error) => {
-				console.log(`error occurred`, error);
-			});
-	};
-	const handleSave = (e) => {
-		save();
-	};
-	const handleCancel = (e) => {
-		e.stopPropagation();
-		setEditMode(false);
-	};
-	const handleRemove = (e) => {
-		e.stopPropagation();
-		onRemove(block.getKey());
-	};
-	const handleFileChange = (e) => {
-		console.log('handleFileChange called');
-		e.preventDefault();
-		// file.current = e.target.files && e.target.files[0] ? e.target.files[0] : null;
-	};
-
-	useEffect(() => {
-		try {
-			console.log(
-				'useeffect',
-				contentState.getEntity(block.getEntityAt(0)).getData()['url']
-			);
-			setUrl(contentState.getEntity(block.getEntityAt(0)).getData()['url']);
-		} catch (e) {
-			console.error(e);
-		}
-	}, [contentState]);
-	const entity = contentState.getEntity(block.getEntityAt(0));
-	console.log(entity.getData(), block.getEntityAt(0));
-	const src = entity ? entity.getData()['url'] : null;
-
-	return (
-		<div onClick={enableEditMode} style={{ textAlign: 'center' }}>
-			{isEditMode ? (
-				<div>
-					<div>
-						Click here to upload image
-						<input onChange={handleFileChange} type="file" accept="image/*" />
-					</div>
-					<div>
-						<button onClick={handleSave}>Save</button>
-						<button onClick={handleCancel}>Cancel</button>
-						<button onClick={handleRemove}>Remove</button>
-					</div>
-				</div>
-			) : null}
-			<div>{src ? <img src={src} /> : <span>No image uploaded</span>}</div>
-		</div>
-	);
-};
 
 export default ImageBlock;

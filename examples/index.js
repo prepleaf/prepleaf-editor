@@ -28,13 +28,28 @@ const getImagePolicy = (file) => {
 	});
 };
 
-ReactDOM.render(
-	React.createElement(Editor, {
-		getImagePolicy,
-		customRef: (ref) => {
-			console.log({ ref });
-		},
-		readOnly: false,
-	}),
-	rootElement
-);
+class Example extends React.Component {
+	constructor(props, context) {
+		super(props, context);
+		this.state = { readOnly: false };
+	}
+	render() {
+		return (
+			<div>
+				<label>
+					<input
+						type="checkbox"
+						value={this.state.readOnly}
+						onChange={(e) => {
+							this.setState({ readOnly: e.target.checked });
+						}}
+					/>
+					<legend>Readonly</legend>
+				</label>
+				<Editor getImagePolicy={getImagePolicy} readOnly={this.state.readOnly} />
+			</div>
+		);
+	}
+}
+
+ReactDOM.render(<Example />, rootElement);

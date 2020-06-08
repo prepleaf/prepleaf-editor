@@ -125,6 +125,7 @@ export default class TeXBlock extends React.Component {
 
 	render() {
 		var texContent = null;
+		const { readOnly } = this.props.blockProps;
 		if (this.state.editMode) {
 			if (this.state.invalidTeX) {
 				texContent = '';
@@ -171,8 +172,16 @@ export default class TeXBlock extends React.Component {
 		}
 
 		return (
-			<div className={className}>
-				<KatexOutput content={texContent} onClick={this._onClick} />
+			<div
+				className={className}
+				style={{
+					cursor: readOnly ? 'default' : '',
+				}}
+			>
+				<KatexOutput
+					content={texContent}
+					onClick={readOnly ? undefined : this._onClick}
+				/>
 				{editPanel}
 			</div>
 		);

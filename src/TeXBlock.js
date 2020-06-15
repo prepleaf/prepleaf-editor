@@ -41,6 +41,7 @@ export class KatexOutput extends React.Component {
 		}
 		return (
 			<Component
+				contentEditable={this.props.contentEditable}
 				className={`${this.props.inline ? 'inline-katex-wrapper' : ''}`}
 				ref={this.handleContainerRef}
 				onClick={this.props.onClick}

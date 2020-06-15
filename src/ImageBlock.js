@@ -1,5 +1,6 @@
 import React from 'react';
 const { useEffect, useRef, useState } = React;
+import Image from './components/Image';
 
 class ImageBlock extends React.Component {
 	constructor(props, context) {
@@ -170,6 +171,9 @@ class ImageBlock extends React.Component {
 			url = this.props.contentState
 				.getEntity(this.props.block.getEntityAt(0))
 				.getData()['url'];
+		}
+		if (readOnly) {
+			return <Image src={url} />;
 		}
 		return (
 			<div

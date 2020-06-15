@@ -19,9 +19,14 @@ const InlineEquation = ({
 	contentState,
 	decoratedText,
 	children,
+	start,
+	end,
 }) => {
 	console.log(decoratedText);
-	const matchResult = inlineEquationRegex.exec(decoratedText);
+	// const block = contentState.getBlockForKey(blockKey);
+	// console.log(block.toJS());
+
+	const matchResult = new RegExp(inlineEquationRegex).exec(decoratedText);
 	const matchedText = matchResult && matchResult[1];
 	return (
 		<span style={{ backgroundColor: '', display: 'inline-block' }}>

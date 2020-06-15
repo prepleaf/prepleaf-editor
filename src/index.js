@@ -16,6 +16,7 @@ import TeXBlock from './TeXBlock';
 import ImageBlock from './ImageBlock';
 import { insertTeXBlock } from './modifiers/insertTeXBlock';
 import { removeTeXBlock } from './modifiers/removeTeXBlock';
+import { insertText } from './modifiers/insertText';
 import {
 	insertInlineEquation,
 	INLINE_EQUATION,
@@ -44,7 +45,6 @@ const katexCssCdn = (
 );
 
 const keyBindingFn = (e) => {
-	// console.log(e.keyCode);
 	if (e.keyCode === 120) {
 		return 'insert_image';
 	}
@@ -98,6 +98,7 @@ export class TeXEditor extends React.Component {
 			editorState: contentEditorState,
 			liveTeXEdits: Map(),
 			imageEdits: Map(),
+			pasteEquationInline: false,
 		};
 
 		this._focus = () => this.editorRef.focus();
@@ -236,18 +237,6 @@ export class TeXEditor extends React.Component {
 				};
 			}
 		} else if (block.getType() === 'unstyled') {
-			block.findEntityRanges(
-				(v) => {
-					if (v.getEntity()) {
-						return true;
-					}
-					return false;
-				},
-				(start, end) => {
-					// console.log(start, end);
-					// console.log(block.getEntityAt(start));
-				}
-			);
 		}
 		return null;
 	};
@@ -263,17 +252,33 @@ export class TeXEditor extends React.Component {
 	componentDidMount() {
 		const { customRef } = this.props;
 		customRef && customRef(this);
+		this.refreshPasteEquationFlag();
 	}
 	componentWillUnmount() {
 		const { customRef } = this.props;
 		customRef && customRef(null);
 	}
+	refreshPasteEquationFlag = () => {
+		if (window.localStorage.getItem('pasteEquationFlag') === 'inline') {
+			this.setState({ pasteEquationInline: true });
+		} else {
+			this.setState({ pasteEquationInline: false });
+		}
+	};
+	handlePasteEquationFlagChange = (e) => {
+		window.localStorage.setItem(
+			'pasteEquationFlag',
+			e.target.checked ? 'inline' : 'block'
+		);
+		this.refreshPasteEquationFlag();
+	};
 	/**
 	 * While editing TeX, set the Draft editor to read-only. This allows us to
 	 * have a textarea within the DOM.
 	 */
 	render() {
 		const { readOnly } = this.props;
+		const { pasteEquationInline } = this.state;
 		if (readOnly) {
 			return (
 				<div>
@@ -327,6 +332,16 @@ export class TeXEditor extends React.Component {
 						</Button>
 					</div>
 					<div>
+						<div style={{}}>
+							<label>
+								<input
+									checked={pasteEquationInline}
+									onChange={this.handlePasteEquationFlagChange}
+									type="checkbox"
+								/>
+								Paste Equation Inline
+							</label>
+						</div>
 						<div style={{ display: 'none' }}>
 							For inline eqn use $equatoin in here$: $\frac{'{2}{3}$'}
 						</div>
@@ -341,12 +356,10 @@ export class TeXEditor extends React.Component {
 						<Editor
 							handlePastedFiles={(files) => {
 								const { editorState } = this.state;
-								console.log(files[0]);
 								this.setState({ editorState: insertImageBlock(editorState, files[0]) });
 								return 'handled';
 							}}
 							handleDroppedFiles={(selection, files) => {
-								// console.log(selection.toObject(), files);
 								const updatedSelectionEditorState = EditorState.acceptSelection(
 									this.state.editorState,
 									selection
@@ -358,6 +371,14 @@ export class TeXEditor extends React.Component {
 							}}
 							handlePastedText={(text, html, editorState) => {
 								if (text.indexOf('$$') === 0 && text.substring(text.length - 2)) {
+									if (pasteEquationInline) {
+										const newEditorState = insertText(
+											editorState,
+											text.substring(1, text.length - 1) + ' '
+										);
+										this.setState({ editorState: newEditorState });
+										return 'handled';
+									}
 									const content = text.substring(2, text.length - 2);
 									this.setState({
 										editorState: insertTeXBlock(editorState, content),

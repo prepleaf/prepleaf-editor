@@ -27,7 +27,7 @@ import { insertImageBlock } from './modifiers/insertImageBlock';
 import decorators from './decorators';
 import InlineEquation from './components/InlineEquation';
 import Button from './Button';
-import { ReadOnlyContext, FunctionsContext } from './contexts';
+import { PrpeleafEditorGlobalContext } from './contexts';
 import { EditEquation } from './decorators/inline-equation';
 import './main.css';
 
@@ -254,6 +254,7 @@ export class TeXEditor extends React.Component {
 	}
 
 	componentDidMount() {
+		console.log('prepleaf-editor mounted', 1);
 		const { customRef } = this.props;
 		customRef && customRef(this);
 		this.refreshPasteEquationFlag();
@@ -279,12 +280,13 @@ export class TeXEditor extends React.Component {
 		);
 		this.refreshPasteEquationFlag();
 	};
-	get contextFunctions() {
+	get contextValue() {
 		return {
 			openInlineEquationEditor: (blockKey, start, end, text) => {
 				this.setState({ editInlineEquation: { blockKey, start, end, text } });
 			},
 			changeText: this.changeText,
+			readOnly: this.props.readOnly,
 		};
 	}
 	changeText = (blockKey, start, end, text) => {
@@ -325,7 +327,7 @@ export class TeXEditor extends React.Component {
 			return (
 				<div>
 					{katexCssCdn}
-					<ReadOnlyContext.Provider value={true}>
+					<PrpeleafEditorGlobalContext.Provider value={this.contextValue}>
 						<Editor
 							customStyleMap={customStyleMap}
 							blockRendererFn={this._blockRenderer}
@@ -341,7 +343,7 @@ export class TeXEditor extends React.Component {
 							ref={this.handleEditorRef}
 							spellCheck={true}
 						/>
-					</ReadOnlyContext.Provider>
+					</PrpeleafEditorGlobalContext.Provider>
 				</div>
 			);
 		}
@@ -411,7 +413,7 @@ export class TeXEditor extends React.Component {
 						style={{ border: 'solid 1px #777' }}
 						onClick={this._focus}
 					>
-						<FunctionsContext.Provider value={this.contextFunctions}>
+						<PrpeleafEditorGlobalContext.Provider value={this.contextValue}>
 							<Editor
 								handlePastedFiles={(files) => {
 									const { editorState } = this.state;
@@ -463,7 +465,7 @@ export class TeXEditor extends React.Component {
 								ref={this.handleEditorRef}
 								spellCheck={true}
 							/>
-						</FunctionsContext.Provider>
+						</PrpeleafEditorGlobalContext.Provider>
 					</div>
 				</div>
 			</div>

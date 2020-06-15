@@ -16,7 +16,9 @@
 	"license": "ISC",
 	"dependencies": {
 		"draft-js": "^0.11.5",
-		"katex": "^0.11.1",
+		"katex": "^0.11.1"
+	},
+	"peerDependencies": {
 		"react": "^16.13.1"
 	},
 	"devDependencies": {
@@ -27,6 +29,7 @@
 		"@rollup/plugin-commonjs": "^11.0.2",
 		"@rollup/plugin-node-resolve": "^7.1.1",
 		"react-dom": "^16.13.1",
+		"react": "^16.13.1",
 		"rollup-plugin-babel": "^4.4.0",
 		"rollup-plugin-inject-process-env": "^1.1.0",
 		"rollup-plugin-livereload": "^1.1.0",

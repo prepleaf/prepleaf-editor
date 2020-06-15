@@ -5,6 +5,7 @@ import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
 import * as DraftJS from 'draft-js';
 import * as immutablejs from 'immutable';
+import * as React from 'react';
 
 export default {
 	input: 'src/index.js',
@@ -24,6 +25,7 @@ export default {
 			namedExports: {
 				'draft-js': Object.keys(DraftJS),
 				immutable: Object.keys(immutablejs),
+				react: Object.keys(React),
 			},
 		}),
 		// When we're building for production (npm run build

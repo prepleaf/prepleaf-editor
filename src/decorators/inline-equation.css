@@ -1,0 +1,93 @@
+.inline-equation-display-wrapper .editable {
+	position: relative;
+}
+
+.inline-equation-display-wrapper:hover .inline-equation-popover {
+	display: inline;
+}
+
+.inline-equation-popover {
+	position: absolute;
+	bottom: 90%;
+	left: 0;
+	z-index: 5;
+	background: white;
+	padding: 8px 12px;
+	border: solid 1px #333;
+	cursor: pointer;
+	display: none;
+}
+
+.pe-portal-root {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 999999999;
+	background-color: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(3px) opacity(0.7);
+}
+
+.pe-portal-cntn {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 5;
+	margin: auto;
+	overflow: auto;
+}
+
+.pe-portal-cntrhlpr {
+	display: flex;
+	-webkit-box-pack: center;
+	justify-content: center;
+	position: relative;
+	padding-top: 10%;
+	margin: auto auto 4%;
+}
+
+.pe-portal-styler {
+	min-width: 400px;
+	width: 100%;
+	max-width: 800px;
+	background-color: #fff;
+	box-shadow: rgba(0, 0, 0, 0.13) 2px 4px 19px 0px;
+	border-radius: 8px;
+	padding: 24px;
+}
+
+.pe-portal-textarea {
+	width: 100%;
+	border: solid 1px #888;
+	border-radius: 8px;
+	padding: 12px;
+}
+.pe-portal-button {
+	box-shadow: none;
+	outline: none;
+	border: solid 1px;
+	height: 32px;
+	padding: 0 12px;
+	border-radius: 4px;
+	margin: 4px;
+	cursor: pointer;
+}
+
+.pe-portal-button.submit {
+	background: #1976d2;
+	border-color: #1976d2;
+	color: white;
+}
+
+.pe-portal-button.cancel {
+	background-color: white;
+	color: #333;
+}
+
+.pe-portal-error {
+	color: red;
+	text-align: center;
+}

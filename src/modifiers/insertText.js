@@ -13,7 +13,7 @@ export function insertText(editorState, content) {
 	// 	{ content }
 	// );
 	// const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-	const contentStateWithLink = Modifier.insertText(
+	const contentStateWithLink = Modifier.replaceText(
 		contentState,
 		selectionState,
 		content
@@ -23,10 +23,6 @@ export function insertText(editorState, content) {
 		editorState,
 		contentStateWithLink,
 		'insert-characters'
-	);
-	console.log(
-		convertToRaw(editorState.getCurrentContent()),
-		convertToRaw(newEditorState.getCurrentContent())
 	);
 	return newEditorState;
 }

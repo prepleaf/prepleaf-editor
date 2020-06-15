@@ -9,6 +9,8 @@ import {
 	RichUtils,
 	getDefaultKeyBinding,
 	KeyBindingUtil,
+	SelectionState,
+	Modifier,
 } from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
@@ -25,6 +27,8 @@ import { insertImageBlock } from './modifiers/insertImageBlock';
 import decorators from './decorators';
 import InlineEquation from './components/InlineEquation';
 import Button from './Button';
+import { ReadOnlyContext, FunctionsContext } from './contexts';
+import { EditEquation } from './decorators/inline-equation';
 import './main.css';
 
 const customStyleMap = {
@@ -254,6 +258,9 @@ export class TeXEditor extends React.Component {
 		customRef && customRef(this);
 		this.refreshPasteEquationFlag();
 	}
+	componentDidUpdate() {
+		console.log(this.state.editorState.getCurrentContent().toJS());
+	}
 	componentWillUnmount() {
 		const { customRef } = this.props;
 		customRef && customRef(null);
@@ -272,6 +279,41 @@ export class TeXEditor extends React.Component {
 		);
 		this.refreshPasteEquationFlag();
 	};
+	get contextFunctions() {
+		return {
+			openInlineEquationEditor: (blockKey, start, end, text) => {
+				this.setState({ editInlineEquation: { blockKey, start, end, text } });
+			},
+			changeText: this.changeText,
+		};
+	}
+	changeText = (blockKey, start, end, text) => {
+		console.log(blockKey, start, end, text);
+		const editorState = this.state.editorState;
+		const emptySelection = SelectionState.createEmpty(blockKey);
+		const selection = emptySelection.merge({
+			anchorOffset: start,
+			focusOffset: end,
+		});
+		const newContentState = Modifier.replaceText(
+			editorState.getCurrentContent(),
+			selection,
+			text
+		);
+		const newEditorState = EditorState.createWithContent(
+			newContentState,
+			decorators
+		);
+		console.log(
+			editorState.getCurrentContent().toJS(),
+			newEditorState.getCurrentContent().toJS()
+		);
+		this.setState({
+			editorState: newEditorState,
+			editInlineEquation: undefined,
+		});
+		// console.log(emptySelection.toJS(), selection.toJS());
+	};
 	/**
 	 * While editing TeX, set the Draft editor to read-only. This allows us to
 	 * have a textarea within the DOM.
@@ -283,21 +325,23 @@ export class TeXEditor extends React.Component {
 			return (
 				<div>
 					{katexCssCdn}
-					<Editor
-						customStyleMap={customStyleMap}
-						blockRendererFn={this._blockRenderer}
-						editorState={this.state.editorState}
-						handleKeyCommand={this._handleKeyCommand}
-						keyBindingFn={keyBindingFn}
-						onChange={this._onChange}
-						readOnly={
-							readOnly ||
-							this.state.liveTeXEdits.count() ||
-							this.state.imageEdits.count()
-						}
-						ref={this.handleEditorRef}
-						spellCheck={true}
-					/>
+					<ReadOnlyContext.Provider value={true}>
+						<Editor
+							customStyleMap={customStyleMap}
+							blockRendererFn={this._blockRenderer}
+							editorState={this.state.editorState}
+							handleKeyCommand={this._handleKeyCommand}
+							keyBindingFn={keyBindingFn}
+							onChange={this._onChange}
+							readOnly={
+								readOnly ||
+								this.state.liveTeXEdits.count() ||
+								this.state.imageEdits.count()
+							}
+							ref={this.handleEditorRef}
+							spellCheck={true}
+						/>
+					</ReadOnlyContext.Provider>
 				</div>
 			);
 		}
@@ -332,6 +376,20 @@ export class TeXEditor extends React.Component {
 						</Button>
 					</div>
 					<div>
+						{this.state.editInlineEquation ? (
+							<EditEquation
+								value={this.state.editInlineEquation.text}
+								onCancel={() => this.setState({ editInlineEquation: undefined })}
+								onChange={(text) => {
+									this.changeText(
+										this.state.editInlineEquation.blockKey,
+										this.state.editInlineEquation.start,
+										this.state.editInlineEquation.end,
+										text
+									);
+								}}
+							/>
+						) : null}
 						<div style={{}}>
 							<label>
 								<input
@@ -353,55 +411,59 @@ export class TeXEditor extends React.Component {
 						style={{ border: 'solid 1px #777' }}
 						onClick={this._focus}
 					>
-						<Editor
-							handlePastedFiles={(files) => {
-								const { editorState } = this.state;
-								this.setState({ editorState: insertImageBlock(editorState, files[0]) });
-								return 'handled';
-							}}
-							handleDroppedFiles={(selection, files) => {
-								const updatedSelectionEditorState = EditorState.acceptSelection(
-									this.state.editorState,
-									selection
-								);
-								this.setState({
-									editorState: insertImageBlock(updatedSelectionEditorState, files[0]),
-								});
-								return 'handled';
-							}}
-							handlePastedText={(text, html, editorState) => {
-								if (text.indexOf('$$') === 0 && text.substring(text.length - 2)) {
-									if (pasteEquationInline) {
-										const newEditorState = insertText(
-											editorState,
-											text.substring(1, text.length - 1) + ' '
-										);
-										this.setState({ editorState: newEditorState });
-										return 'handled';
-									}
-									const content = text.substring(2, text.length - 2);
+						<FunctionsContext.Provider value={this.contextFunctions}>
+							<Editor
+								handlePastedFiles={(files) => {
+									const { editorState } = this.state;
 									this.setState({
-										editorState: insertTeXBlock(editorState, content),
+										editorState: insertImageBlock(editorState, files[0]),
 									});
 									return 'handled';
+								}}
+								handleDroppedFiles={(selection, files) => {
+									const updatedSelectionEditorState = EditorState.acceptSelection(
+										this.state.editorState,
+										selection
+									);
+									this.setState({
+										editorState: insertImageBlock(updatedSelectionEditorState, files[0]),
+									});
+									return 'handled';
+								}}
+								handlePastedText={(text, html, editorState) => {
+									if (text.indexOf('$$') === 0 && text.substring(text.length - 2)) {
+										if (pasteEquationInline) {
+											const newEditorState = insertText(
+												editorState,
+												text.substring(1, text.length - 1) + ' '
+											);
+											this.setState({ editorState: newEditorState });
+											return 'handled';
+										}
+										const content = text.substring(2, text.length - 2);
+										this.setState({
+											editorState: insertTeXBlock(editorState, content),
+										});
+										return 'handled';
+									}
+									return 'not-handled';
+								}}
+								customStyleMap={customStyleMap}
+								blockRendererFn={this._blockRenderer}
+								editorState={this.state.editorState}
+								handleKeyCommand={this._handleKeyCommand}
+								keyBindingFn={keyBindingFn}
+								onChange={this._onChange}
+								placeholder="Start a document..."
+								readOnly={
+									readOnly ||
+									this.state.liveTeXEdits.count() ||
+									this.state.imageEdits.count()
 								}
-								return 'not-handled';
-							}}
-							customStyleMap={customStyleMap}
-							blockRendererFn={this._blockRenderer}
-							editorState={this.state.editorState}
-							handleKeyCommand={this._handleKeyCommand}
-							keyBindingFn={keyBindingFn}
-							onChange={this._onChange}
-							placeholder="Start a document..."
-							readOnly={
-								readOnly ||
-								this.state.liveTeXEdits.count() ||
-								this.state.imageEdits.count()
-							}
-							ref={this.handleEditorRef}
-							spellCheck={true}
-						/>
+								ref={this.handleEditorRef}
+								spellCheck={true}
+							/>
+						</FunctionsContext.Provider>
 					</div>
 				</div>
 			</div>

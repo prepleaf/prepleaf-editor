@@ -32,5 +32,5 @@ export default {
 		// instead of npm run dev), minify
 		terser(),
 	],
-	external: ['react', 'react-dom'],
+	external: ['react', 'react-dom', 'katex', 'draft-js'],
 };

@@ -12,13 +12,11 @@ export function insertInlineEquation(editorState) {
 		{ content: 'Hello Wprld!' }
 	);
 	const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
-	console.log(entityKey);
 	const contentStateWithLink = Modifier.applyEntity(
 		contentStateWithEntity,
 		selectionState,
 		entityKey
 	);
-	console.log(contentStateWithLink);
 
 	// const newEditorState = EditorState.set(editorState, {
 	// 	currentContent: contentStateWithEntity,
@@ -27,10 +25,6 @@ export function insertInlineEquation(editorState) {
 		editorState,
 		contentStateWithLink,
 		'apply-entity'
-	);
-	console.log(
-		convertToRaw(editorState.getCurrentContent()),
-		convertToRaw(newEditorState.getCurrentContent())
 	);
 	return newEditorState;
 }

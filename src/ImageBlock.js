@@ -39,14 +39,6 @@ class ImageBlock extends React.Component {
 		);
 	}
 
-	componentDidUpdate() {
-		console.log({
-			imageData: this.props.contentState
-				.getEntity(this.props.block.getEntityAt(0))
-				.getData(),
-		});
-	}
-
 	handleClick = (e) => {
 		if (this.state.editMode) {
 			return;
@@ -84,7 +76,6 @@ class ImageBlock extends React.Component {
 			url: url,
 			file: undefined,
 		});
-		console.log(newContentState.toObject());
 		this.setState(
 			{
 				editMode: false,

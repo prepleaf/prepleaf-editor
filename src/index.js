@@ -254,13 +254,9 @@ export class TeXEditor extends React.Component {
 	}
 
 	componentDidMount() {
-		console.log('prepleaf-editor mounted', 1);
 		const { customRef } = this.props;
 		customRef && customRef(this);
 		this.refreshPasteEquationFlag();
-	}
-	componentDidUpdate() {
-		console.log(this.state.editorState.getCurrentContent().toJS());
 	}
 	componentWillUnmount() {
 		const { customRef } = this.props;
@@ -290,7 +286,6 @@ export class TeXEditor extends React.Component {
 		};
 	}
 	changeText = (blockKey, start, end, text) => {
-		console.log(blockKey, start, end, text);
 		const editorState = this.state.editorState;
 		const emptySelection = SelectionState.createEmpty(blockKey);
 		const selection = emptySelection.merge({
@@ -306,15 +301,10 @@ export class TeXEditor extends React.Component {
 			newContentState,
 			decorators
 		);
-		console.log(
-			editorState.getCurrentContent().toJS(),
-			newEditorState.getCurrentContent().toJS()
-		);
 		this.setState({
 			editorState: newEditorState,
 			editInlineEquation: undefined,
 		});
-		// console.log(emptySelection.toJS(), selection.toJS());
 	};
 	/**
 	 * While editing TeX, set the Draft editor to read-only. This allows us to

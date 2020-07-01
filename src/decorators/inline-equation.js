@@ -104,8 +104,7 @@ class InlineEquation extends React.Component {
 		} = this.props;
 		const { isEditing } = this.state;
 		const setIsEditing = this.setIsEditing;
-		const { isReadOnly, openInlineEquationEditor, changeText } = this.context;
-		// const { openInlineEquationEditor, changeText } = useContext(FunctionsContext);
+		const { readOnly, openInlineEquationEditor, changeText } = this.context;
 
 		const matchResult = new RegExp(inlineEquationRegex).exec(decoratedText);
 		const matchedText = matchResult && matchResult[1];
@@ -117,17 +116,17 @@ class InlineEquation extends React.Component {
 		);
 		return (
 			<span style={{ backgroundColor: '', display: 'inline-block' }}>
-				{isReadOnly ? (
+				{readOnly ? (
 					katexDisplay
 				) : (
 					<span
 						className={
 							'inline-equation-display-wrapper' +
-							(isReadOnly ? ' readonly' : ' editable')
+							(readOnly ? ' readonly' : ' editable')
 						}
 					>
 						{katexDisplay}
-						{isReadOnly ? null : (
+						{readOnly ? null : (
 							<div className="inline-equation-popover">
 								<button
 									onClick={(e) => {

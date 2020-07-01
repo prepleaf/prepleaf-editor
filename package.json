@@ -12,7 +12,16 @@
 		"test": "npm run test",
 		"build": "rollup -c rollup.config.prod.js --environment INCLUDE_DEPS,BUILD:production"
 	},
-	"author": "asaharan812@gmail.com",
+	"homepage": "https://github.com/prepleaf/prepleaf-editor",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/prepleaf/prepleaf-editor.git"
+	},
+	"author": {
+		"email": "asaharan812@gmail.com",
+		"name": "Amit Saharan",
+		"url": "https://asaharan.github.io"
+	},
 	"license": "ISC",
 	"dependencies": {
 		"draft-js": "^0.11.5",

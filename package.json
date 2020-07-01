@@ -1,6 +1,6 @@
 {
 	"name": "prepleaf-editor",
-	"version": "1.0.22",
+	"version": "1.0.23",
 	"description": "Editor used by Prepleaf",
 	"main": "lib/index.js",
 	"directories": {

@@ -12,6 +12,9 @@
 		"test": "npm run test",
 		"build": "rollup -c rollup.config.prod.js --environment INCLUDE_DEPS,BUILD:production"
 	},
+	"files": [
+		"lib/*"
+	],
 	"homepage": "https://github.com/prepleaf/prepleaf-editor",
 	"repository": {
 		"type": "git",

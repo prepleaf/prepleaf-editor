@@ -7,30 +7,39 @@ import * as DraftJS from 'draft-js';
 import * as immutablejs from 'immutable';
 import * as React from 'react';
 
-export default {
-	input: 'src/index.js',
-	output: {
-		file: 'lib/index.js',
-		format: 'cjs',
+export default [
+	{
+		input: 'src/index.js',
+		output: {
+			file: 'lib/prepleaf-editor.js',
+			format: 'cjs',
+		},
+		plugins: [
+			resolve(),
+			babel({ exclude: 'node_modules/**' }),
+			postcss({
+				plugins: [],
+			}),
+			commonjs({
+				namedExports: {
+					'draft-js': Object.keys(DraftJS),
+					immutable: Object.keys(immutablejs),
+					react: Object.keys(React),
+				},
+			}),
+		],
+		external: ['react', 'react-dom', 'katex', 'draft-js'],
 	},
-	plugins: [
-		resolve(),
-		babel({
-			exclude: 'node_modules/**', // only transpile our source code
-		}),
-		postcss({
-			plugins: [],
-		}),
-		commonjs({
-			namedExports: {
-				'draft-js': Object.keys(DraftJS),
-				immutable: Object.keys(immutablejs),
-				react: Object.keys(React),
-			},
-		}),
-		// When we're building for production (npm run build
-		// instead of npm run dev), minify
-		terser(),
-	],
-	external: ['react', 'react-dom', 'katex', 'draft-js'],
-};
+	{
+		input: 'lib/prepleaf-editor.js',
+		output: {
+			file: 'lib/prepleaf-editor.min.js',
+			format: 'cjs',
+		},
+		plugins: [
+			// When we're building for production (npm run build
+			// instead of npm run dev), minify
+			terser(),
+		],
+	},
+];

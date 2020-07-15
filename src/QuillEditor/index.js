@@ -8,47 +8,118 @@ const wordUnwatedCharRemover = (node, delta) => {
 			console.log('yaaayyyyyy, found.', node, delta);
 			return new Delta();
 		} else {
-			// console.log(node.style, node.getAttribute('style'), node.style.msoSpectrum);
 		}
-	} catch (error) {
-		// console.error(error);
-	}
+	} catch (error) {}
 	return delta;
 };
 
-const QuillEditor = ({ htmlContent, readOnly }) => {
-	const editorElemRef = useRef();
-	const editor = useRef();
-	useEffect(() => {
-		editor.current = new Quill(editorElemRef.current, {
+class QuillEditor extends React.Component {
+	componentDidMount() {
+		const { onChange } = this.props;
+		this.quill = new Quill(this.editorElemRef, {
 			modules: {
 				clipboard: {
 					matchers: [['span', wordUnwatedCharRemover]],
 				},
 			},
-			readOnly,
+			readOnly: this.props.readOnly,
 		});
-	}, []);
-	useEffect(() => {
-		const quill = editor.current;
+		this.quill.on('text-change', () => {
+			console.log('text-change');
+			onChange && onChange(this.quill.getContents());
+		});
+		this.onContentsOrHtmlContentChange();
+	}
+
+	setHtmlContent = (htmlContent) => {
+		const quill = this.quill;
 		const delta = quill.clipboard.convert(htmlContent);
 		quill.setContents(delta, 'api');
-	}, [htmlContent]);
-
-	useEffect(() => {
-		editor.current.enable(!readOnly);
-	}, [readOnly]);
-
-	return (
-		<div>
-			<div ref={editorElemRef} />
-		</div>
-	);
-};
+	};
+	setContents = (contents) => {
+		const quill = this.quill;
+		quill.setContents(contents, 'api');
+	};
+	onContentsOrHtmlContentChange = () => {
+		if (this.props.contents) {
+			this.setContents(this.props.contents);
+		} else if (this.props.htmlContent) {
+			this.setHtmlContent(this.props.htmlContent);
+		}
+	};
+	componentDidUpdate(prevProps) {
+		const quill = this.quill;
+		if (this.props.htmlContent !== prevProps.htmlContent) {
+			this.onContentsOrHtmlContentChange();
+		}
+		// if (prevProps.htmlContent != this.props.htmlContent) {
+		// 	this.setHtmlContent(this.props.htmlContent);
+		// }
+		if (prevProps.readOnly !== this.props.readOnly) {
+			quill.enable(!readOnly);
+		}
+	}
+	render() {
+		return (
+			<div>
+				<div ref={this.handleEditorElemRef} />
+			</div>
+		);
+	}
+	handleEditorElemRef = (ref) => {
+		this.editorElemRef = ref;
+	};
+}
 
 QuillEditor.defaultProps = {
 	htmlContent: '',
 	readOnly: false,
 };
 
-export default QuillEditor;
+const parseContent = (rawContent) => {
+	try {
+		console.log(rawContent);
+		return JSON.parse(rawContent);
+	} catch (e) {
+		console.log('returning null');
+		console.error(e);
+		return null;
+	}
+};
+
+class QuillEditorController extends React.Component {
+	constructor(props, context) {
+		super(props, context);
+		this.state = {
+			contents: parseContent(props.rawContent),
+		};
+	}
+	componentDidMount() {
+		const { customRef } = this.props;
+		customRef && customRef(this);
+	}
+	componentWillUnmount() {
+		const { customRef } = this.props;
+		customRef && customRef(null);
+	}
+
+	get value() {
+		return {
+			rawContent: this.state.contents,
+		};
+	}
+	render() {
+		const { customRef, ...otherProps } = this.props;
+		return (
+			<QuillEditor
+				{...otherProps}
+				contents={this.state.contents}
+				onChange={(contents) => {
+					this.setState({ contents });
+				}}
+			/>
+		);
+	}
+}
+
+export default QuillEditorController;

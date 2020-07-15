@@ -48,23 +48,48 @@ class Example extends React.Component {
 						<legend>Readonly</legend>
 					</label>
 					<PrepleafEditor
+						rawContent={`{"blocks":[{"key":"ah5p3","text":"Hello","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`}
 						getImagePolicy={getImagePolicy}
 						readOnly={this.state.readOnly}
+						customRef={this.handleDraftEditorRef}
 					/>
+					<button
+						onClick={() => {
+							console.log(JSON.stringify(this.draftEditorRef.value));
+						}}
+					>
+						Get content
+					</button>
 				</div>
 				<div>
 					<textarea
+						placeholder="Paste text here to see in editor"
 						value={this.state.htmlContent}
 						onChange={(e) => this.setState({ htmlContent: e.target.value })}
 					></textarea>
 					<PrepleafEditor
+						customRef={this.handleQuillEditorRef}
 						readOnly={this.state.readOnly}
-						htmlContent={this.state.htmlContent}
+						// htmlContent={this.state.htmlContent}
+						rawContent={`{\"ops\":[{\"insert\":\"Hello\\nPrep\"},{\"attributes\":{\"bold\":true},\"insert\":\"leaf\"},{\"insert\":\"\\n\"}]}`}
 					/>
+					<button
+						onClick={() => {
+							console.log(JSON.stringify(this.quillEditorRef.value));
+						}}
+					>
+						Get content
+					</button>
 				</div>
 			</div>
 		);
 	}
+	handleQuillEditorRef = (ref) => {
+		this.quillEditorRef = ref;
+	};
+	handleDraftEditorRef = (ref) => {
+		this.draftEditorRef = ref;
+	};
 }
 
 ReactDOM.render(<Example />, rootElement);

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Editor from '../src';
+import PrepleafEditor from '../src';
 
 const rootElement = document.getElementById('root');
 
@@ -31,22 +31,37 @@ const getImagePolicy = (file) => {
 class Example extends React.Component {
 	constructor(props, context) {
 		super(props, context);
-		this.state = { readOnly: false };
+		this.state = { readOnly: false, htmlContent: '<div>Hello</div>' };
 	}
 	render() {
 		return (
 			<div>
-				<label>
-					<input
-						type="checkbox"
-						value={this.state.readOnly}
-						onChange={(e) => {
-							this.setState({ readOnly: e.target.checked });
-						}}
+				<div>
+					<label style={{ display: 'flex' }}>
+						<input
+							type="checkbox"
+							value={this.state.readOnly}
+							onChange={(e) => {
+								this.setState({ readOnly: e.target.checked });
+							}}
+						/>
+						<legend>Readonly</legend>
+					</label>
+					<PrepleafEditor
+						getImagePolicy={getImagePolicy}
+						readOnly={this.state.readOnly}
 					/>
-					<legend>Readonly</legend>
-				</label>
-				<Editor getImagePolicy={getImagePolicy} readOnly={this.state.readOnly} />
+				</div>
+				<div>
+					<textarea
+						value={this.state.htmlContent}
+						onChange={(e) => this.setState({ htmlContent: e.target.value })}
+					></textarea>
+					<PrepleafEditor
+						readOnly={this.state.readOnly}
+						htmlContent={this.state.htmlContent}
+					/>
+				</div>
 			</div>
 		);
 	}

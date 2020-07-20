@@ -56,7 +56,7 @@ class QuillEditor extends React.Component {
 		// 	this.setHtmlContent(this.props.htmlContent);
 		// }
 		if (prevProps.readOnly !== this.props.readOnly) {
-			quill.enable(!readOnly);
+			quill.enable(!this.props.readOnly);
 		}
 	}
 	render() {
@@ -105,7 +105,7 @@ class QuillEditorController extends React.Component {
 
 	get value() {
 		return {
-			rawContent: this.state.contents,
+			rawContent: JSON.stringify(this.state.contents),
 		};
 	}
 	render() {

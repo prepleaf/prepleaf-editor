@@ -4,8 +4,12 @@ import Delta from 'quill-delta';
 
 const wordUnwatedCharRemover = (node, delta) => {
 	try {
-		if (node.getAttribute('style').indexOf('mso-spacerun:yes') > -1) {
-			console.log('yaaayyyyyy, found.', node, delta);
+		const style = node.getAttribute('style');
+		if (
+			style.indexOf('mso-spacerun:yes') > -1 ||
+			style.indexOf('mso-tab-count') > -1
+		) {
+			// console.log('yaaayyyyyy, found.', node, delta);
 			return new Delta();
 		} else {
 		}
@@ -78,10 +82,10 @@ QuillEditor.defaultProps = {
 
 const parseContent = (rawContent) => {
 	try {
-		console.log(rawContent);
+		// console.log(rawContent);
 		return JSON.parse(rawContent);
 	} catch (e) {
-		console.log('returning null');
+		console.log('unable to parse content, returning null');
 		console.error(e);
 		return null;
 	}

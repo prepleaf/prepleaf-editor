@@ -246,7 +246,7 @@ export class TeXEditor extends React.Component {
 	};
 
 	resetEditor() {
-		let contentEditorState = EditorState.createEmpty();
+		let contentEditorState = EditorState.createEmpty(decorators);
 		this.setState({
 			editorState: contentEditorState,
 			liveTeXEdits: Map(),

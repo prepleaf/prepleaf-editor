@@ -9,7 +9,6 @@ const wordUnwatedCharRemover = (node, delta) => {
 			style.indexOf('mso-spacerun:yes') > -1 ||
 			style.indexOf('mso-tab-count') > -1
 		) {
-			// console.log('yaaayyyyyy, found.', node, delta);
 			return new Delta();
 		} else {
 		}

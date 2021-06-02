@@ -2,7 +2,7 @@ import React from 'react';
 import { PrpeleafEditorGlobalContext } from '../contexts';
 import './inline-highlighted-text.css';
 
-const inlineEquationRegex = /\[(.*?)\]/g;
+const inlineEquationRegex = /\[\[(.*?)\]\]/g;
 
 export class EditEquation extends React.Component {
 	constructor(props, context) {
@@ -29,7 +29,7 @@ export class EditEquation extends React.Component {
 		this.setState({ value, isValid: this.validate(value, false) });
 	};
 	handleSubmit = () => {
-		this.props.onChange('[' + this.state.value + ']');
+		this.props.onChange('[[' + this.state.value + ']]');
 	};
 	render() {
 		const { onCancel, onChange, value: initialValue } = this.props;

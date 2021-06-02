@@ -93,17 +93,14 @@ class InlineHighlightedText extends React.Component {
 		const matchedText = matchResult && matchResult[1];
 		return (
 			<span style={{ backgroundColor: '', display: 'inline-block' }}>
-				{readOnly ? (
-					{ matchedText }
-				) : (
-					<span
-						className={
-							'inline-highlighted-text' + (readOnly ? ' readonly' : ' editable')
-						}
-					>
-						{matchedText}
-					</span>
-				)}
+				<span
+					className={
+						'prepleaf-editor-inline-highlighted-text' +
+						(readOnly ? ' readonly' : ' editable')
+					}
+				>
+					{matchedText}
+				</span>
 				<span
 					style={{
 						width: '0',

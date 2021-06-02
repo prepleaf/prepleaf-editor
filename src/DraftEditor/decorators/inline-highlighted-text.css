@@ -1,0 +1,7 @@
+.prepleaf-editor .inline-highlighted-text {
+	background-color: #000;
+	color: #fff;
+	padding: 0 3px;
+	margin: 0 3px;
+	display: inline-block;
+}

@@ -1,4 +1,6 @@
-import { Modifier, EditorState, convertToRaw } from 'draft-js';
+import Draft from 'draft-js';
+
+const { Modifier, EditorState } = Draft;
 
 let count = 0;
 export const INLINE_EQUATION = 'ie';
@@ -6,12 +8,6 @@ export const INLINE_EQUATION = 'ie';
 export function insertText(editorState, content) {
 	const selectionState = editorState.getSelection();
 	const contentState = editorState.getCurrentContent();
-	// const contentStateWithEntity = contentState.createEntity(
-	// 	'unstyled',
-	// 	'MUTABLE',
-	// 	{ content }
-	// );
-	// const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 	const contentStateWithLink = Modifier.replaceText(
 		contentState,
 		selectionState,

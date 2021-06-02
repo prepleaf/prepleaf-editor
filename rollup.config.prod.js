@@ -17,15 +17,18 @@ export default [
 		plugins: [
 			resolve(),
 			babel({ exclude: 'node_modules/**' }),
+			commonjs({
+				transformMixedEsModules: true,
+				esmExternals: true,
+				defaultIsModuleExports: true,
+				// namedExports: {
+				// 'draft-js': Object.keys(DraftJS),
+				// immutable: Object.keys(immutablejs),
+				// react: Object.keys(React),
+				// },
+			}),
 			postcss({
 				plugins: [],
-			}),
-			commonjs({
-				namedExports: {
-					'draft-js': Object.keys(DraftJS),
-					immutable: Object.keys(immutablejs),
-					react: Object.keys(React),
-				},
 			}),
 		],
 		external: ['react', 'react-dom', 'katex', 'draft-js'],

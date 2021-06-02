@@ -6,7 +6,9 @@ import injectProcessEnv from 'rollup-plugin-inject-process-env';
 import postcss from 'rollup-plugin-postcss';
 import * as DraftJS from 'draft-js';
 import * as immutablejs from 'immutable';
-import * as React from 'react';
+// import * as React from 'react';
+
+// console.log(Object.keys(React));
 
 export default {
 	input: 'examples/index.js',
@@ -19,15 +21,18 @@ export default {
 		babel({
 			exclude: 'node_modules/**', // only transpile our source code
 		}),
+		commonjs({
+			transformMixedEsModules: true,
+			esmExternals: true,
+			defaultIsModuleExports: true,
+			// namedExports: {
+			// 'draft-js': Object.keys(DraftJS),
+			// immutable: Object.keys(immutablejs),
+			// react: Object.keys(React),
+			// },
+		}),
 		postcss({
 			plugins: [],
-		}),
-		commonjs({
-			namedExports: {
-				'draft-js': Object.keys(DraftJS),
-				immutable: Object.keys(immutablejs),
-				react: Object.keys(React),
-			},
 		}),
 		injectProcessEnv({
 			NODE_ENV: 'development',

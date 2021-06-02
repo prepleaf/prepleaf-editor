@@ -1,6 +1,6 @@
-'use strict';
+import Draft from 'draft-js';
 
-import { EditorState, Modifier, SelectionState } from 'draft-js';
+const { EditorState, Modifier, SelectionState } = Draft;
 
 export function removeTeXBlock(editorState, blockKey) {
 	var content = editorState.getCurrentContent();

@@ -1,4 +1,6 @@
-import { Modifier, EditorState, convertToRaw } from 'draft-js';
+import Draft from 'draft-js';
+
+const { Modifier, EditorState } = Draft;
 
 let count = 0;
 export const INLINE_EQUATION = 'ie';
@@ -9,7 +11,7 @@ export function insertInlineEquation(editorState) {
 	const contentStateWithEntity = contentState.createEntity(
 		INLINE_EQUATION,
 		'IMMUTABLE',
-		{ content: 'Hello Wprld!' }
+		{ content: 'Hello World!' }
 	);
 	const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
 	const contentStateWithLink = Modifier.applyEntity(
@@ -18,9 +20,6 @@ export function insertInlineEquation(editorState) {
 		entityKey
 	);
 
-	// const newEditorState = EditorState.set(editorState, {
-	// 	currentContent: contentStateWithEntity,
-	// });
 	const newEditorState = EditorState.push(
 		editorState,
 		contentStateWithLink,

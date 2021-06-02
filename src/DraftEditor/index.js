@@ -1,17 +1,7 @@
-import { Map } from 'immutable';
+import Immutable from 'immutable';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-	Editor,
-	EditorState,
-	convertFromRaw,
-	convertToRaw,
-	RichUtils,
-	getDefaultKeyBinding,
-	KeyBindingUtil,
-	SelectionState,
-	Modifier,
-} from 'draft-js';
+import Draft from 'draft-js';
 import 'draft-js/dist/Draft.css';
 
 import TeXBlock from './TeXBlock';
@@ -31,13 +21,25 @@ import { PrpeleafEditorGlobalContext } from './contexts';
 import { EditEquation } from './decorators/inline-equation';
 import './main.css';
 
+const {
+	Editor,
+	EditorState,
+	convertFromRaw,
+	convertToRaw,
+	RichUtils,
+	getDefaultKeyBinding,
+	KeyBindingUtil,
+	SelectionState,
+	Modifier,
+} = Draft;
+const { hasCommandModifier } = KeyBindingUtil;
+const { Map } = Immutable;
+
 const customStyleMap = {
 	super: { verticalAlign: 'super', fontSize: '.8rem' },
 	sub: { verticalAlign: 'sub', fontSize: '0.8rem' },
 	equation: { marginLeft: '1px', marginRight: '1px', fontStyle: 'italic' },
 };
-
-const { hasCommandModifier } = KeyBindingUtil;
 
 const katexCssCdn = (
 	<link

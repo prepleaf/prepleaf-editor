@@ -1,4 +1,6 @@
-import { AtomicBlockUtils, EditorState } from 'draft-js';
+import Draft from 'draft-js';
+
+const { AtomicBlockUtils, EditorState } = Draft;
 
 export function insertImageBlock(editorState, file) {
 	const contentState = editorState.getCurrentContent();

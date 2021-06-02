@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import Quill from 'quill';
 import Delta from 'quill-delta';
 

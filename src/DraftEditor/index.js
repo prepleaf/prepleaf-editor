@@ -41,15 +41,6 @@ const customStyleMap = {
 	equation: { marginLeft: '1px', marginRight: '1px', fontStyle: 'italic' },
 };
 
-const katexCssCdn = (
-	<link
-		rel="stylesheet"
-		href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css"
-		integrity="sha256-V8SV2MO1FUb63Bwht5Wx9x6PVHNa02gv8BgH/uH3ung="
-		crossOrigin="anonymous"
-	/>
-);
-
 const keyBindingFn = (e) => {
 	if (e.keyCode === 120) {
 		return 'insert_image';
@@ -71,12 +62,30 @@ const keyBindingFn = (e) => {
 	return getDefaultKeyBinding(e);
 };
 
+function loadKatexCSS() {
+	const linkElemId = 'katex-css-prepleaf-editor';
+	const katexCssElem = document.getElementById(linkElemId);
+
+	const katexCdnLink =
+		'https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css';
+	const cssFileIntegrity = 'sha256-V8SV2MO1FUb63Bwht5Wx9x6PVHNa02gv8BgH/uH3ung=';
+	if (!katexCssElem) {
+		const linkElem = document.createElement('link');
+		linkElem.href = katexCdnLink;
+		linkElem.rel = 'stylesheet';
+		linkElem.integrity = cssFileIntegrity;
+		linkElem.crossOrigin = 'anonymous';
+		document.head.appendChild(linkElem);
+	}
+}
+
 export class TeXEditor extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 
 		const { rawContent } = props;
 		let contentEditorState;
+		loadKatexCSS();
 		if (typeof rawContent === 'undefined') {
 			contentEditorState = EditorState.createEmpty(decorators);
 		} else {
@@ -318,7 +327,6 @@ export class TeXEditor extends React.Component {
 		if (readOnly) {
 			return (
 				<div>
-					{katexCssCdn}
 					<PrpeleafEditorGlobalContext.Provider value={this.contextValue}>
 						<Editor
 							customStyleMap={customStyleMap}
@@ -341,7 +349,6 @@ export class TeXEditor extends React.Component {
 		}
 		return (
 			<div className="prepleaf-editor">
-				{katexCssCdn}
 				<div className="TeXEditor-toolbar">
 					<div className="TeXEditor-toolbar-list">
 						<Button

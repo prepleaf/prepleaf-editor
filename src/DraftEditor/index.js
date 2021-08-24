@@ -75,6 +75,7 @@ function loadKatexCSS() {
 		linkElem.rel = 'stylesheet';
 		linkElem.integrity = cssFileIntegrity;
 		linkElem.crossOrigin = 'anonymous';
+		linkElem.id = linkElemId;
 		document.head.appendChild(linkElem);
 	}
 }

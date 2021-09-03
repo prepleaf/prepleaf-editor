@@ -86,7 +86,7 @@ export class TeXEditor extends React.Component {
 
 		const { rawContent } = props;
 		let contentEditorState;
-		loadKatexCSS();
+		// loadKatexCSS();
 		if (typeof rawContent === 'undefined') {
 			contentEditorState = EditorState.createEmpty(decorators);
 		} else {

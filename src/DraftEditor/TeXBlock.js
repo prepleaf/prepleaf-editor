@@ -1,6 +1,7 @@
 import React from 'react';
 import katex from 'katex';
-import 'katex/dist/katex.css';
+import './katex.css';
+import './fonts.css';
 
 export class KatexOutput extends React.Component {
 	constructor(props) {

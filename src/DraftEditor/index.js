@@ -195,7 +195,7 @@ export class TeXEditor extends React.Component {
 	}
 
 	_blockRenderer = (block) => {
-		const { getImagePolicy, readOnly } = this.props;
+		const { getImagePolicy, readOnly, transformImageUrl } = this.props;
 		if (block.getType() === 'atomic') {
 			const contentState = this.state.editorState.getCurrentContent();
 			const type = contentState.getEntity(block.getEntityAt(0)).getType();
@@ -244,6 +244,7 @@ export class TeXEditor extends React.Component {
 						onRemove: (blockKey) => this._removeTeX(blockKey),
 						getImagePolicy,
 						readOnly,
+						transformUrl: transformImageUrl,
 					},
 				};
 			}
@@ -479,6 +480,7 @@ export class TeXEditor extends React.Component {
 
 TeXEditor.propTypes = {
 	readOnly: PropTypes.bool.isRequired,
+	getImageUrl: PropTypes.func,
 };
 
 TeXEditor.defaultProps = {

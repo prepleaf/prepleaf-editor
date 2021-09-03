@@ -28,6 +28,15 @@ const getImagePolicy = (file) => {
 	});
 };
 
+// const transformImageUrl = (data) => {
+// 	const url = data.url;
+// 	return `${url}${url.includes('?') ? '' : '?'}&si=test`;
+// };
+
+const transformImageUrl = (url) => {
+	return `https://images.prepleaf.com/?url=${encodeURIComponent(url)}`;
+};
+
 class Example extends React.Component {
 	constructor(props, context) {
 		super(props, context);
@@ -50,6 +59,7 @@ class Example extends React.Component {
 					<PrepleafEditor
 						rawContent={`{"blocks":[{"key":"ah5p3","text":"Hello","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`}
 						getImagePolicy={getImagePolicy}
+						transformImageUrl={transformImageUrl}
 						readOnly={this.state.readOnly}
 						customRef={this.handleDraftEditorRef}
 					/>

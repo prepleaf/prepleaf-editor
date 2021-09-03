@@ -2,6 +2,12 @@ import React from 'react';
 const { useEffect, useRef, useState } = React;
 import Image from './components/Image';
 
+function getUrl(data) {
+	if (typeof data === 'object') {
+		return data['url'];
+	}
+}
+
 class ImageBlock extends React.Component {
 	constructor(props, context) {
 		super(props, context);
@@ -154,14 +160,18 @@ class ImageBlock extends React.Component {
 
 	render() {
 		const { editMode, isUploading } = this.state;
-		const { readOnly } = this.props.blockProps;
+		const { readOnly, transformUrl } = this.props.blockProps;
 		var url;
 		if (editMode) {
 			url = this.state.url;
 		} else {
-			url = this.props.contentState
+			const data = this.props.contentState
 				.getEntity(this.props.block.getEntityAt(0))
-				.getData()['url'];
+				.getData();
+			url = getUrl(data);
+			if (typeof transformUrl === 'function') {
+				url = transformUrl(url);
+			}
 		}
 		if (readOnly) {
 			return <Image src={url} />;

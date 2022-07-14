@@ -119,10 +119,11 @@ export class TeXEditor extends React.Component {
 
 		this._focus = () => this.editorRef.focus();
 		this._onChange = (editorState) => {
-			this.setState({ editorState });
-			if (this.props.onChange) {
-				this.props.onChange(this.value);
-			}
+			this.setState({ editorState }, () => {
+				if (this.props.onChange) {
+					this.props.onChange(this.value);
+				}
+			});
 		};
 
 		this._toggleName = (editorState, name) => {

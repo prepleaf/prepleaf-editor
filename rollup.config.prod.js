@@ -1,5 +1,5 @@
 import resolve from '@rollup/plugin-node-resolve';
-import babel from 'rollup-plugin-babel';
+import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import { terser } from 'rollup-plugin-terser';
 import postcss from 'rollup-plugin-postcss';
@@ -16,7 +16,7 @@ export default [
 		},
 		plugins: [
 			resolve(),
-			babel({ exclude: 'node_modules/**' }),
+			babel({ exclude: 'node_modules/**', babelHelpers: 'bundled' }),
 			commonjs({
 				transformMixedEsModules: true,
 				esmExternals: true,

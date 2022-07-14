@@ -116,61 +116,61 @@ export class TeXEditor extends React.Component {
 			imageEdits: Map(),
 			pasteEquationInline: false,
 		};
-
-		this._focus = () => this.editorRef.focus();
-		this._onChange = (editorState) => {
-			this.setState({ editorState }, () => {
-				if (this.props.onChange) {
-					this.props.onChange(this.value);
-				}
-			});
-		};
-
-		this._toggleName = (editorState, name) => {
-			this._onChange(RichUtils.toggleInlineStyle(editorState, name));
-		};
-
-		this._handleKeyCommand = (command, editorState) => {
-			if (['super', 'sub'].indexOf(command) > -1) {
-				this._toggleName(editorState, command);
-				return true;
-			}
-			if ('equation' === command) {
-				this.markAsInlineEquation();
-			}
-
-			if ('insert_image' === command) {
-				this._insertImage();
-			}
-
-			var newState = RichUtils.handleKeyCommand(editorState, command);
-			if (newState) {
-				this._onChange(newState);
-				return true;
-			}
-			return false;
-		};
-
-		this._removeTeX = (blockKey) => {
-			var { editorState, liveTeXEdits, imageEdits } = this.state;
-			this.setState({
+	}
+	_insertTeX = () => {
+		this.setState(
+			{
+				liveTeXEdits: Map(),
+				editorState: insertTeXBlock(this.state.editorState),
+			},
+			this.notifyChange
+		);
+	};
+	_removeTeX = (blockKey) => {
+		var { editorState, liveTeXEdits, imageEdits } = this.state;
+		this.setState(
+			{
 				liveTeXEdits: liveTeXEdits.remove(blockKey),
 				imageEdits: imageEdits.remove(blockKey),
 				editorState: removeTeXBlock(editorState, blockKey),
-			});
-		};
+			},
+			this.notifyChange
+		);
+	};
+	_handleKeyCommand = (command, editorState) => {
+		if (['super', 'sub'].indexOf(command) > -1) {
+			this._toggleName(editorState, command);
+			return true;
+		}
+		if ('equation' === command) {
+			this.markAsInlineEquation();
+		}
 
-		this._insertTeX = () => {
-			this.setState({
-				liveTeXEdits: Map(),
-				editorState: insertTeXBlock(this.state.editorState),
-			});
-		};
-	}
+		if ('insert_image' === command) {
+			this._insertImage();
+		}
+
+		var newState = RichUtils.handleKeyCommand(editorState, command);
+		if (newState) {
+			this._onChange(newState);
+			return true;
+		}
+		return false;
+	};
+	_toggleName = (editorState, name) => {
+		this._onChange(RichUtils.toggleInlineStyle(editorState, name));
+	};
+	_focus = () => this.editorRef.focus();
+	_onChange = (editorState) => {
+		this.setState({ editorState }, this.notifyChange);
+	};
+	notifyChange = () => {
+		if (this.props.onChange) {
+			this.props.onChange(this.value);
+		}
+	};
 	markAsInlineEquation = () => {
-		this.setState({
-			editorState: insertInlineEquation(this.state.editorState),
-		});
+		this._onChange(insertInlineEquation(this.state.editorState));
 	};
 	toggleSuper = (e) => {
 		e.preventDefault();
@@ -188,10 +188,13 @@ export class TeXEditor extends React.Component {
 	};
 
 	_insertImage = () => {
-		this.setState({
-			imageEdits: Map(),
-			editorState: insertImageBlock(this.state.editorState),
-		});
+		this.setState(
+			{
+				imageEdits: Map(),
+				editorState: insertImageBlock(this.state.editorState),
+			},
+			this.notifyChange
+		);
 	};
 	get value() {
 		const { editorState } = this.state;
@@ -218,10 +221,16 @@ export class TeXEditor extends React.Component {
 						},
 						onFinishEdit: (blockKey, newContentState) => {
 							var { liveTeXEdits } = this.state;
-							this.setState({
-								liveTeXEdits: liveTeXEdits.remove(blockKey),
-								editorState: EditorState.createWithContent(newContentState, decorators),
-							});
+							this.setState(
+								{
+									liveTeXEdits: liveTeXEdits.remove(blockKey),
+									editorState: EditorState.createWithContent(
+										newContentState,
+										decorators
+									),
+								},
+								this.notifyChange
+							);
 						},
 						onRemove: (blockKey) => this._removeTeX(blockKey),
 						readOnly,
@@ -242,10 +251,16 @@ export class TeXEditor extends React.Component {
 						},
 						onFinishEdit: (blockKey, newContentState) => {
 							var { imageEdits } = this.state;
-							this.setState({
-								imageEdits: imageEdits.remove(blockKey),
-								editorState: EditorState.createWithContent(newContentState, decorators),
-							});
+							this.setState(
+								{
+									imageEdits: imageEdits.remove(blockKey),
+									editorState: EditorState.createWithContent(
+										newContentState,
+										decorators
+									),
+								},
+								this.notifyChange
+							);
 						},
 						onRemove: (blockKey) => this._removeTeX(blockKey),
 						getImagePolicy,
@@ -266,10 +281,13 @@ export class TeXEditor extends React.Component {
 
 	resetEditor() {
 		let contentEditorState = EditorState.createEmpty(decorators);
-		this.setState({
-			editorState: contentEditorState,
-			liveTeXEdits: Map(),
-		});
+		this.setState(
+			{
+				editorState: contentEditorState,
+				liveTeXEdits: Map(),
+			},
+			this.notifyChange
+		);
 	}
 
 	componentDidMount() {
@@ -320,10 +338,13 @@ export class TeXEditor extends React.Component {
 			newContentState,
 			decorators
 		);
-		this.setState({
-			editorState: newEditorState,
-			editInlineEquation: undefined,
-		});
+		this.setState(
+			{
+				editorState: newEditorState,
+				editInlineEquation: undefined,
+			},
+			this.notifyChange
+		);
 	};
 	/**
 	 * While editing TeX, set the Draft editor to read-only. This allows us to
@@ -424,9 +445,7 @@ export class TeXEditor extends React.Component {
 							<Editor
 								handlePastedFiles={(files) => {
 									const { editorState } = this.state;
-									this.setState({
-										editorState: insertImageBlock(editorState, files[0]),
-									});
+									this._onChange(insertImageBlock(editorState, files[0]));
 									return 'handled';
 								}}
 								handleDroppedFiles={(selection, files) => {
@@ -434,9 +453,9 @@ export class TeXEditor extends React.Component {
 										this.state.editorState,
 										selection
 									);
-									this.setState({
-										editorState: insertImageBlock(updatedSelectionEditorState, files[0]),
-									});
+									this._onChange(
+										insertImageBlock(updatedSelectionEditorState, files[0])
+									);
 									return 'handled';
 								}}
 								handlePastedText={(text, html, editorState) => {
@@ -446,13 +465,11 @@ export class TeXEditor extends React.Component {
 												editorState,
 												text.substring(1, text.length - 1) + ' '
 											);
-											this.setState({ editorState: newEditorState });
+											this._onChange(newEditorState);
 											return 'handled';
 										}
 										const content = text.substring(2, text.length - 2);
-										this.setState({
-											editorState: insertTeXBlock(editorState, content),
-										});
+										this._onChange(insertTeXBlock(editorState, content));
 										return 'handled';
 									}
 									return 'not-handled';

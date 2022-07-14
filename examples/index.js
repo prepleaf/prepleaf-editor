@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import PrepleafEditor from '../src';
 
 const rootElement = document.getElementById('root');
@@ -33,7 +33,10 @@ const getImagePolicy = (file) => {
 // 	return `${url}${url.includes('?') ? '' : '?'}&si=test`;
 // };
 
-const transformImageUrl = (url) => {
+const createImageTransformer = (ignoreTransform) => (url) => {
+	if (ignoreTransform) {
+		return url;
+	}
 	return `https://images.prepleaf.com/?url=${encodeURIComponent(url)}`;
 };
 
@@ -59,8 +62,9 @@ class Example extends React.Component {
 					<PrepleafEditor
 						rawContent={`{"blocks":[{"key":"ah5p3","text":"Hello","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`}
 						getImagePolicy={getImagePolicy}
-						transformImageUrl={transformImageUrl}
+						transformImageUrl={createImageTransformer(true)}
 						readOnly={this.state.readOnly}
+						onChange={console.log}
 						customRef={this.handleDraftEditorRef}
 					/>
 					<button
@@ -102,4 +106,5 @@ class Example extends React.Component {
 	};
 }
 
-ReactDOM.render(<Example />, rootElement);
+const container = ReactDOM.createRoot(rootElement);
+container.render(<Example />);

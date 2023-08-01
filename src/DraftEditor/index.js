@@ -39,6 +39,12 @@ const customStyleMap = {
 	super: { verticalAlign: 'super', fontSize: '.8rem' },
 	sub: { verticalAlign: 'sub', fontSize: '0.8rem' },
 	equation: { marginLeft: '1px', marginRight: '1px', fontStyle: 'italic' },
+	"unordered-list-item": {
+		listStyleType: 'disc',
+	},
+	"ordered-list-item": {
+		listStyleType: 'decimal',
+	},
 };
 
 const keyBindingFn = (e) => {
@@ -57,6 +63,17 @@ const keyBindingFn = (e) => {
 		if (e.keyCode === 69) {
 			e.preventDefault();
 			return 'equation';
+		}
+		if (e.keyCode === 55) {
+			console.log('unordered-list-item');
+			// ordered list is 85 which is 'u'
+			e.preventDefault();
+			return 'ordered-list-item';
+		}
+		if(e.keyCode === 56) {
+			console.log('unordered-list-item');
+			e.preventDefault();
+			return 'unordered-list-item';
 		}
 	}
 	return getDefaultKeyBinding(e);
@@ -149,6 +166,12 @@ export class TeXEditor extends React.Component {
 		if ('insert_image' === command) {
 			this._insertImage();
 		}
+		if ('ordered-list-item' === command) {
+			this.toggleOL();
+		}
+		if ('unordered-list-item' === command) {
+			this.toggleUL();
+		}
 
 		var newState = RichUtils.handleKeyCommand(editorState, command);
 		if (newState) {
@@ -186,6 +209,21 @@ export class TeXEditor extends React.Component {
 		const { editorState } = this.state;
 		this._toggleName(editorState, 'equation');
 	};
+	toggleUL = (e) => {
+		e?.preventDefault();
+		e?.stopPropagation();
+		const { editorState } = this.state;
+		const newEditorState = RichUtils.toggleBlockType(editorState, 'unordered-list-item');
+		this._onChange(newEditorState);
+	}
+
+	toggleOL = (e) => {
+		e?.preventDefault();
+		e?.stopPropagation();
+		const { editorState } = this.state;
+		const newEditorState = RichUtils.toggleBlockType(editorState, 'unordered-list-item');
+		this._onChange(newEditorState);
+	}
 
 	_insertImage = () => {
 		this.setState(
@@ -395,6 +433,12 @@ export class TeXEditor extends React.Component {
 						>
 							X<sup>2</sup>
 						</Button>
+						<Button onMouseDown={this.toggleOL} className="TeXEditor-insert-button">
+							OL
+						</Button>
+						<Button onMouseDown={this.toggleUL} className="TeXEditor-insert-button">
+							UL
+						</Button>
 						<Button onMouseDown={this._insertTeX} className="TeXEditor-insert-button">
 							Equation
 						</Button>
@@ -488,6 +532,7 @@ export class TeXEditor extends React.Component {
 								}
 								ref={this.handleEditorRef}
 								spellCheck={true}
+								handleBeforeInput={this.handleBeforeInput}
 							/>
 						</PrpeleafEditorGlobalContext.Provider>
 					</div>
@@ -495,6 +540,103 @@ export class TeXEditor extends React.Component {
 			</div>
 		);
 	}
+
+	handleBeforeInput = (chars, editorState) => {
+		if (this.handleOLBeforeInput(chars, editorState) !== 'handled') {
+			return this.handleULBeforeInput(chars, editorState);
+		} else {
+			return 'handled';
+		}
+	}
+
+	handleULBeforeInput = (chars, editorState) => {
+		if (chars === ' ') {
+		const selection = editorState.getSelection();
+		const currentContent = editorState.getCurrentContent();
+		const block = currentContent.getBlockForKey(selection.getStartKey());
+		const startOffset = selection.getStartOffset();
+		const hyphenOffset = block.getText().indexOf('-');
+
+		// Check if the current block contains a hyphen at the start
+		if (hyphenOffset === 0 && startOffset === 1) {
+			// Convert to unordered-list-item
+			const newContentState = Modifier.setBlockType(
+			currentContent,
+			selection.merge({
+				anchorOffset: hyphenOffset,
+				focusOffset: hyphenOffset + 1,
+			}),
+			'unordered-list-item'
+			);
+
+			// Remove the hyphen by setting an empty text
+			const withoutHyphenContentState = Modifier.replaceText(
+			newContentState,
+			selection.merge({
+				anchorOffset: hyphenOffset,
+				focusOffset: hyphenOffset + 1,
+			}),
+			''
+			);
+
+			const newEditorState = EditorState.push(
+			editorState,
+			withoutHyphenContentState,
+			'insert-characters'
+			);
+
+
+			this._onChange(newEditorState);
+			return 'handled';
+		}
+		}
+    	return 'not-handled';
+	};
+	
+	handleOLBeforeInput = (chars, editorState) => {
+		if (chars === ' ') {
+			const selection = editorState.getSelection();
+			const currentContent = editorState.getCurrentContent();
+			const block = currentContent.getBlockForKey(selection.getStartKey());
+			const startOffset = selection.getStartOffset();
+			const periodOffset = block.getText().indexOf('.');
+
+			// Check if the current block contains a period after a number at the start
+			if (periodOffset === 1 && startOffset === 2 && !isNaN(block.getText()[0])) {
+				// Convert to ordered-list-item
+				const newContentState = Modifier.setBlockType(
+					currentContent,
+					selection.merge({
+						anchorOffset: 0,
+						focusOffset: periodOffset + 1,
+					}),
+					'ordered-list-item'
+				);
+
+				// Remove the number and period by setting an empty text
+				const withoutNumberAndPeriodContentState = Modifier.replaceText(
+					newContentState,
+					selection.merge({
+						anchorOffset: 0,
+						focusOffset: periodOffset + 1,
+					}),
+					''
+				);
+
+				// Apply the new content state to the editor state
+				const newEditorState = EditorState.push(
+					editorState,
+					withoutNumberAndPeriodContentState,
+					'insert-characters'
+				);
+
+				this._onChange(newEditorState);
+				return 'handled';
+			}
+		}
+
+		return 'not-handled';
+	};
 
 	handleEditorRef = (ref) => {
 		this.editorRef = ref;

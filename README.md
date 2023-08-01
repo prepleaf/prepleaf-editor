@@ -48,3 +48,9 @@ const transformImageUrl = (url) => {
 };
 
 ```
+
+
+## Support for Ordered List and Unordered List
+
+It supports adding ordered list and unordered list in the editor same way as in slack. You can start typing `1. ` or `- ` to start adding ordered list and unordered list respectively.
+You can press Ctrl/Cmd + 7 to add ordered list and Ctrl/Cmd + 8 to add unordered list.
